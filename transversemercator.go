@@ -1,9 +1,7 @@
 package proj
 
 import (
-	"fmt"
 	"math"
-	"sync"
 )
 
 // A TransverseMercator represents a transverse Mercator projection.
@@ -35,37 +33,6 @@ var (
 		e:    Airy1830Modified,
 	}
 )
-
-var (
-	utmZoneCacheMutex sync.RWMutex
-	utmZoneCache      = make(map[int]*TransverseMercator)
-)
-
-// UTMZone returns the projection for zone z, or nil if no such zone exists.
-func UTMZone(z int) *TransverseMercator {
-	if z < 1 || 60 < z {
-		return nil
-	}
-	utmZoneCacheMutex.RLock()
-	tm, ok := utmZoneCache[z]
-	utmZoneCacheMutex.RUnlock()
-	if ok {
-		return tm
-	}
-	tm = &TransverseMercator{
-		name: fmt.Sprintf("UTMZone(%d)", z),
-		f0:   0.9996,
-		φ0:   rad(0),
-		λ0:   rad(6*(30-float64(z)) + 3),
-		e0:   500000,
-		n0:   0,
-		e:    International1924,
-	}
-	utmZoneCacheMutex.Lock()
-	utmZoneCache[z] = tm
-	utmZoneCacheMutex.Unlock()
-	return tm
-}
 
 // Forward connverts latitude φ and longitude λ to easting E and northing N.
 func (tm *TransverseMercator) Forward(φ, λ float64) (E, N float64) {
