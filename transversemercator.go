@@ -34,7 +34,7 @@ var (
 	}
 )
 
-// Forward connverts latitude φ and longitude λ to easting E and northing N.
+// Forward converts latitude φ and longitude λ to easting E and northing N.
 func (tm *TransverseMercator) Forward(φ, λ float64) (E, N float64) {
 	sinφ, cosφ := math.Sincos(φ)
 	ν := tm.e.a * tm.f0 / math.Sqrt(1-tm.e.e2*sinφ*sinφ)
@@ -63,7 +63,7 @@ func (tm *TransverseMercator) Forward(φ, λ float64) (E, N float64) {
 	return
 }
 
-// Reverse connverts easting E and northing N to latitude φ and longitude λ.
+// Reverse converts easting E and northing N to latitude φ and longitude λ.
 func (tm *TransverseMercator) Reverse(E, N float64) (φ, λ float64) {
 	φ1 := (N-tm.e.n)/(tm.e.a*tm.f0) + tm.φ0
 	n := tm.e.n
