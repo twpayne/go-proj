@@ -21,10 +21,10 @@ func TestEllipsoid(t *testing.T) {
 		},
 	} {
 		if x, y, z := c.e.Cartesian(c.phi, c.lambda, c.H); !near(x, c.x, 1e-3) || !near(y, c.y, 1e-3) || !near(z, c.z, 1e-3) {
-			t.Errorf("%s.Cartesian(%v, %v, %v) == %v, %v, %v, want %v, %v, %v", c.e, c.phi, c.lambda, c.H, x, y, z, c.x, c.y, c.z)
+			t.Errorf("%v.Cartesian(%v, %v, %v) == %v, %v, %v, want %v, %v, %v", c.e, c.phi, c.lambda, c.H, x, y, z, c.x, c.y, c.z)
 		}
 		if phi, lambda, H := c.e.Polar(c.x, c.y, c.z, 1e-10); !near(phi, c.phi, 1e-9) || !near(lambda, c.lambda, 1e-10) || !near(H, c.H, 1e-3) {
-			t.Errorf("%s.Polar(%v, %v, %v) == %v, %v, %v, want %v, %v, %v", c.e, c.x, c.y, c.z, phi, lambda, H, c.phi, c.lambda, c.H)
+			t.Errorf("%v.Polar(%v, %v, %v) == %v, %v, %v, want %v, %v, %v", c.e, c.x, c.y, c.z, phi, lambda, H, c.phi, c.lambda, c.H)
 		}
 	}
 }

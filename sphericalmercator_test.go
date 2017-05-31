@@ -19,10 +19,10 @@ func TestSphericalMercator(t *testing.T) {
 		},
 	} {
 		if e, n := c.sm.Forward(c.φ, c.λ); !near(e, c.e, 1e-4) || !near(n, c.n, 1e-3) {
-			t.Errorf("%s.Forward(%v, %v) == %v, %v, want %v, %v", c.sm, c.φ, c.λ, e, n, c.e, c.n)
+			t.Errorf("%v.Forward(%v, %v) == %v, %v, want %v, %v", c.sm, c.φ, c.λ, e, n, c.e, c.n)
 		}
 		if φ, λ := c.sm.Reverse(c.e, c.n); !near(φ, c.φ, 1e-10) || !near(λ, c.λ, 1e-10) {
-			t.Errorf("%s.Reverse(%v, %v) == %v, %v, want %v, %v", c.sm, c.e, c.n, φ, λ, c.φ, c.λ)
+			t.Errorf("%v.Reverse(%v, %v) == %v, %v, want %v, %v", c.sm, c.e, c.n, φ, λ, c.φ, c.λ)
 		}
 	}
 }
