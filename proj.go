@@ -1,4 +1,4 @@
-// Package proj implements the algorithms described in "A Guide to Coordinate Systems in Great Britain".
+// Package proj implements common geospatial projections.
 package proj
 
 import (
