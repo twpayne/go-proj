@@ -47,9 +47,8 @@ func (e *Ellipsoid) Polar(x, y, z, prec float64) (φ, λ, H float64) {
 		if math.Abs(φ-φ0) < prec {
 			H = p/math.Cos(φ) - v
 			return
-		} else {
-			φ0 = φ
 		}
+		φ0 = φ
 	}
 }
 
