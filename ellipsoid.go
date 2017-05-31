@@ -53,10 +53,21 @@ func (e *Ellipsoid) Polar(x, y, z, prec float64) (φ, λ, H float64) {
 }
 
 var (
-	Airy1830          = NewEllipsoid("Airy1830", 6377563.396, 6356256.909)
-	Airy1830Modified  = NewEllipsoid("Airy1830Modified", 6377340.189, 6356034.447)
+	// Airy1830 is the Airy 1830 ellipsoid.
+	Airy1830 = NewEllipsoid("Airy1830", 6377563.396, 6356256.909)
+
+	// Airy1830Modified is the Airy 1830 Modified ellipsoid.
+	Airy1830Modified = NewEllipsoid("Airy1830Modified", 6377340.189, 6356034.447)
+
+	// International1924 is the International 1924 ellipsoid.
 	International1924 = NewEllipsoid("International1924", 6378388.000, 6356911.946)
-	Hayford1909       = NewEllipsoid("Hayford1909", 6378388.000, 6356911.946)
-	GRS80             = NewEllipsoid("GRS80", 6378137.000, 6356752.3141)
-	WGS84             = NewEllipsoid("WGS84", 6378137.000, 6356752.3141)
+
+	// Hayford1909 is the Hayford 1909 ellipsoid.
+	Hayford1909 = NewEllipsoid("Hayford1909", 6378388.000, 6356911.946)
+
+	// GRS80 is the GRS80 ellipsoid.
+	GRS80 = NewEllipsoid("GRS80", 6378137.000, 6356752.3141)
+
+	// WGS84 is the WGS84 ellipsoid.
+	WGS84 = NewEllipsoid("WGS84", 6378137.000, 6356752.3141)
 )
