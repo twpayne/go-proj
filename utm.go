@@ -1,39 +1,25 @@
 package proj
 
-import (
-	"fmt"
-	"sync"
+const (
+	utmLetters = "CDEFGHJKLMNPQRSTUVWXX"
 )
 
 var (
-	utmZoneCacheMutex sync.RWMutex
-	utmZoneCache      = make(map[int]*TransverseMercator)
+	// UTMZones is a map from UTM zones to projections.
+	UTMZones = map[int]*TransverseMercator{}
 )
 
-// UTMZone returns the projection for zone z, or nil if no such zone exists.
-func UTMZone(z int) *TransverseMercator {
-	if z < 1 || 60 < z {
-		return nil
-	}
-	utmZoneCacheMutex.RLock()
-	tm, ok := utmZoneCache[z]
-	utmZoneCacheMutex.RUnlock()
-	if ok {
-		return tm
-	}
-	tm = &TransverseMercator{
-		name: fmt.Sprintf("UTMZone(%d)", z),
+// utmZone returns the UTM projection for zone.
+func utmZone(zone int) *TransverseMercator {
+	return &TransverseMercator{
+		code: 32600 + zone,
 		f0:   0.9996,
 		φ0:   rad(0),
-		λ0:   rad(6*(30-float64(z)) + 3),
+		λ0:   rad(6*(30-float64(zone)) + 3),
 		e0:   500000,
 		n0:   0,
 		e:    International1924,
 	}
-	utmZoneCacheMutex.Lock()
-	utmZoneCache[z] = tm
-	utmZoneCacheMutex.Unlock()
-	return tm
 }
 
 // LatLongUTMZone returns the UTM zone for latitude φ and longitude λ.
@@ -58,11 +44,16 @@ func LatLongUTMZone(φ, λ float64) int {
 }
 
 // LatLongUTMLetter returns the UTM letter for latitude φ and longitude λ.
-func LatLongUTMLetter(φ, λ float64) string {
+func LatLongUTMLetter(φ, λ float64) byte {
 	if φ < -80 || 84 <= φ {
-		return ""
+		return 0
 	}
-	const letters = "CDEFGHJKLMNPQRSTUVWXX"
 	i := int((φ + 80) / 8)
-	return letters[i : i+1]
+	return utmLetters[i]
+}
+
+func initUTM() {
+	for z := 1; z <= 60; z++ {
+		UTMZones[z] = utmZone(z)
+	}
 }

@@ -11,7 +11,7 @@ func TestTransverseMercator(t *testing.T) {
 		e, n float64
 	}{
 		{
-			tm: NationalGrid,
+			tm: EPSG27700,
 			φ:  rad(dms(52, 39, 27.2531)),
 			λ:  rad(dms(1, 43, 4.5177)),
 			e:  651409.903,

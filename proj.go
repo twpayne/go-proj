@@ -31,3 +31,8 @@ func rad(x float64) float64 {
 func near(x, y, e float64) bool {
 	return math.Abs(x-y) < e
 }
+
+func init() {
+	initUTM()
+	initEPSG()
+}

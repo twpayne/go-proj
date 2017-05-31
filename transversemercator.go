@@ -6,33 +6,17 @@ import (
 
 // A TransverseMercator represents a transverse Mercator projection.
 type TransverseMercator struct {
-	name   string
+	code   int
 	f0     float64
 	φ0, λ0 float64
 	e0, n0 float64
 	e      *Ellipsoid
 }
 
-var (
-	NationalGrid = &TransverseMercator{
-		name: "NationalGrid",
-		f0:   0.9996012717,
-		φ0:   rad(49),
-		λ0:   rad(-2),
-		e0:   400000,
-		n0:   -100000,
-		e:    Airy1830,
-	}
-	IrishNationalGrid = &TransverseMercator{
-		name: "IrishNationalGrid",
-		f0:   1.000035,
-		φ0:   rad(dms(53, 30, 0)),
-		λ0:   rad(-8),
-		e0:   200000,
-		n0:   250000,
-		e:    Airy1830Modified,
-	}
-)
+// Code returns tm's EPSG code.
+func (tm *TransverseMercator) Code() int {
+	return tm.code
+}
 
 // Forward converts latitude φ and longitude λ to easting E and northing N.
 func (tm *TransverseMercator) Forward(φ, λ float64) (E, N float64) {
@@ -100,9 +84,4 @@ func (tm *TransverseMercator) Reverse(E, N float64) (φ, λ float64) {
 	φ = φ1 - VII*δE2 + VIII*δE4 - IX*δE2*δE4
 	λ = tm.λ0 + X*δE - XI*δE*δE2 + XII*δE*δE4 - XIIA*δE*δE2*δE4
 	return
-}
-
-// String returns the name of the projection.
-func (tm *TransverseMercator) String() string {
-	return tm.name
 }
