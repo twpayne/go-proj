@@ -24,31 +24,31 @@ func NewEllipsoid(name string, a, b float64) *Ellipsoid {
 	}
 }
 
-// Cartesian converts polar coordinates φ, λ, and H to Cartesian coordinates x, y, and z.
-func (e *Ellipsoid) Cartesian(φ, λ, H float64) (x, y, z float64) {
-	sinφ, cosφ := math.Sincos(φ)
-	sinλ, cosλ := math.Sincos(λ)
-	v := e.a / math.Sqrt(1-e.e2*sinφ*sinφ)
-	x = (v + H) * cosφ * cosλ
-	y = (v + H) * cosφ * sinλ
-	z = ((1-e.e2)*v + H) * sinφ
+// Cartesian converts polar coordinates lat, lon, and H to Cartesian coordinates x, y, and z.
+func (e *Ellipsoid) Cartesian(lat, lon, H float64) (x, y, z float64) {
+	sinLat, cosLat := math.Sincos(lat)
+	sinLon, cosLon := math.Sincos(lon)
+	v := e.a / math.Sqrt(1-e.e2*sinLat*sinLat)
+	x = (v + H) * cosLat * cosLon
+	y = (v + H) * cosLat * sinLon
+	z = ((1-e.e2)*v + H) * sinLat
 	return
 }
 
-// Polar converts Cartesian coordinates x, y, z to polar coordinates φ, λ, and H with precision prec.
-func (e *Ellipsoid) Polar(x, y, z, prec float64) (φ, λ, H float64) {
-	λ = math.Atan2(y, x)
+// Polar converts Cartesian coordinates x, y, z to polar coordinates lat, lon, and H with precision prec.
+func (e *Ellipsoid) Polar(x, y, z, prec float64) (lat, lon, H float64) {
+	lon = math.Atan2(y, x)
 	p := math.Hypot(x, y)
-	φ0 := math.Atan2(z, p*(1-e.e2))
+	lat0 := math.Atan2(z, p*(1-e.e2))
 	for {
-		sinφ0 := math.Sin(φ0)
-		v := e.a / math.Sqrt(1-e.e2*sinφ0*sinφ0)
-		φ = math.Atan2(z+e.e2*v*sinφ0, p)
-		if math.Abs(φ-φ0) < prec {
-			H = p/math.Cos(φ) - v
+		sinLat0 := math.Sin(lat0)
+		v := e.a / math.Sqrt(1-e.e2*sinLat0*sinLat0)
+		lat = math.Atan2(z+e.e2*v*sinLat0, p)
+		if math.Abs(lat-lat0) < prec {
+			H = p/math.Cos(lat) - v
 			return
 		}
-		φ0 = φ
+		lat0 = lat
 	}
 }
 
