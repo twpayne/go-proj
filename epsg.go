@@ -11,8 +11,8 @@ var (
 	EPSG27700 = &TransverseMercator{
 		code: 27700,
 		f0:   0.9996012717,
-		φ0:   rad(49),
-		λ0:   rad(-2),
+		lat0: rad(49),
+		lon0: rad(-2),
 		e0:   400000,
 		n0:   -100000,
 		e:    Airy1830,
@@ -22,8 +22,8 @@ var (
 	EPSG29903 = &TransverseMercator{
 		code: 29903,
 		f0:   1.000035,
-		φ0:   rad(dms(53, 30, 0)),
-		λ0:   rad(-8),
+		lat0: rad(dms(53, 30, 0)),
+		lon0: rad(-8),
 		e0:   200000,
 		n0:   250000,
 		e:    Airy1830Modified,
