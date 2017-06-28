@@ -42,7 +42,6 @@ func TestSphericalMercator(t *testing.T) {
 }
 
 func TestEPSG3857(t *testing.T) {
-	t.Skip()
 	for _, c := range epsg3857TestData {
 		if e, n := EPSG3857.Forward(c.lat, c.lon); !near(e, c.e, 1e-4) || !near(n, c.n, 1e-3) {
 			t.Errorf("EPSG3857.Forward(%v, %v) == %v, %v, want %v, %v", c.lat, c.lon, e, n, c.e, c.n)
