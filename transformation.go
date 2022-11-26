@@ -44,7 +44,7 @@ func (c *Context) NewCRSToCRSTransformation(sourceCRS, targetCRS string, area *A
 
 	pj := C.proj_create_crs_to_crs(c.pjContext, cSourceCRS, cTargetCRS, cArea)
 	if pj == nil {
-		return nil, c.NewError(int(C.proj_context_errno(c.pjContext)))
+		return nil, c.newError(int(C.proj_context_errno(c.pjContext)))
 	}
 
 	transformation := &Transformation{
@@ -75,7 +75,7 @@ func (t *Transformation) Trans(direction Direction, coord Coord) (Coord, error) 
 
 	pjCoord := C.proj_trans(t.pj, (C.PJ_DIRECTION)(direction), *(*C.PJ_COORD)(unsafe.Pointer(&coord)))
 	if errno := int(C.proj_errno(t.pj)); errno != 0 {
-		return Coord{}, t.context.NewError(errno)
+		return Coord{}, t.context.newError(errno)
 	}
 	return *(*Coord)(unsafe.Pointer(&pjCoord)), nil
 }
@@ -93,7 +93,7 @@ func (t *Transformation) TransArray(direction Direction, coords []Coord) error {
 	defer C.proj_errno_restore(t.pj, lastErrno)
 
 	if errno := int(C.proj_trans_array(t.pj, (C.PJ_DIRECTION)(direction), (C.ulong)(len(coords)), (*C.PJ_COORD)(unsafe.Pointer(&coords[0])))); errno != 0 {
-		return t.context.NewError(errno)
+		return t.context.newError(errno)
 	}
 	return nil
 }
@@ -156,7 +156,7 @@ func (t *Transformation) TransGeneric(direction Direction, x *float64, sx, nx in
 		(*C.double)(z), C.size_t(sz), C.size_t(nz),
 		(*C.double)(m), C.size_t(sm), C.size_t(nm),
 	)) != maxN {
-		return t.context.NewError(int(C.proj_errno(t.pj)))
+		return t.context.newError(int(C.proj_errno(t.pj)))
 	}
 
 	return nil
