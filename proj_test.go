@@ -108,7 +108,7 @@ func TestTransformationTrans(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, transformation)
 
-			actualTargetCoord, err := transformation.Trans(proj.DirectionFwd, tc.sourceCoord)
+			actualTargetCoord, err := transformation.Forward(tc.sourceCoord)
 			require.NoError(t, err)
 			assert.InDeltaSlice(t, tc.targetCoord[:], actualTargetCoord[:], 1e-13)
 
@@ -162,7 +162,7 @@ func TestTransformationTransArray(t *testing.T) {
 			require.Equal(t, len(tc.targetCoords), len(tc.sourceCoords))
 
 			actualTargetCoords := slices.Clone(tc.sourceCoords)
-			require.NoError(t, transformation.TransArray(proj.DirectionFwd, actualTargetCoords))
+			require.NoError(t, transformation.ForwardArray(actualTargetCoords))
 			for i, actualTargetCoord := range actualTargetCoords {
 				assert.InDeltaSlice(t, tc.targetCoords[i][:], actualTargetCoord[:], 1e-13)
 			}
@@ -294,7 +294,7 @@ func TestTransformationTransFlatCoords(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			actualTargetFlatCoords := slices.Clone(tc.sourceFlatCoords)
-			require.NoError(t, transformation.TransFlatCoords(proj.DirectionFwd, actualTargetFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
+			require.NoError(t, transformation.ForwardFlatCoords(actualTargetFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
 			assert.InDeltaSlice(t, tc.targetFlatCoords, actualTargetFlatCoords, 1e-9)
 		})
 	}

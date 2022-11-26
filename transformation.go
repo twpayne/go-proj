@@ -65,6 +65,21 @@ func (t *Transformation) Destroy() {
 	}
 }
 
+// Forward transforms coord in the forward direction.
+func (t *Transformation) Forward(coord Coord) (Coord, error) {
+	return t.Trans(DirectionFwd, coord)
+}
+
+// ForwardArray transforms coorsd in the forward direction.
+func (t *Transformation) ForwardArray(coords []Coord) error {
+	return t.TransArray(DirectionFwd, coords)
+}
+
+// ForwardFlatCoords transforms flatCoords in the forward direction.
+func (t *Transformation) ForwardFlatCoords(flatCoords []float64, stride, zIndex, mIndex int) error {
+	return t.TransFlatCoords(DirectionFwd, flatCoords, stride, zIndex, mIndex)
+}
+
 // Trans transforms a single Coord.
 func (t *Transformation) Trans(direction Direction, coord Coord) (Coord, error) {
 	t.context.Lock()
