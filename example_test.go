@@ -7,7 +7,7 @@ import (
 )
 
 func ExampleTransformation_Forward() {
-	transformation, err := proj.NewContext().NewCRSToCRSTransformation("EPSG:4326", "EPSG:3857", nil)
+	transformation, err := proj.NewCRSToCRSTransformation("EPSG:4326", "EPSG:3857", nil)
 	if err != nil {
 		panic(err)
 	}

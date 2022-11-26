@@ -37,6 +37,8 @@ type Error struct {
 	errno   int
 }
 
+var defaultContext = &Context{}
+
 // NewArea returns a new Area.
 func NewArea(westLonDegree, southLatDegree, eastLonDegree, northLatDegree float64) *Area {
 	pjArea := C.proj_area_create()
