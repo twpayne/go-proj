@@ -1,6 +1,6 @@
 # go-proj
 
-[![GoDoc](https://godoc.org/github.com/twpayne/go-proj?status.svg)](https://godoc.org/github.com/twpayne/go-proj)
+[![GoDoc](https://godoc.org/github.com/twpayne/go-proj/v9?status.svg)](https://godoc.org/github.com/twpayne/go-proj/v9)
 
 Package go-proj provides an interface to [PROJ](https://proj.org).
 
@@ -8,7 +8,9 @@ Package go-proj provides an interface to [PROJ](https://proj.org).
 
 * High performance bulk transformation of coordinates.
 * Idiomatic Go API, including complete error handling.
+* Supports PROJ versions 6 and upwards.
 * Compatible with all geometry libraries.
+* Automatically handles C memory management.
 * Well tested.
 
 ## Example
@@ -31,7 +33,7 @@ func ExampleTransformation_Trans() {
 }
 ```
 
-## Comparisons with related software
+## Comparisons with other PROJ bindings
 
 There are many existing bindings for PROJ. Generally speaking, these:
 
@@ -41,8 +43,6 @@ There are many existing bindings for PROJ. Generally speaking, these:
 * Are tied to a single geometry representation.
 
 * Do not handle errors during transformation.
-
-* Use an older version of the PROJ library.
 
 These existing bindings include:
 
