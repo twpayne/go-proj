@@ -80,6 +80,21 @@ func (t *Transformation) ForwardFlatCoords(flatCoords []float64, stride, zIndex,
 	return t.TransFlatCoords(DirectionFwd, flatCoords, stride, zIndex, mIndex)
 }
 
+// Inverse transforms coord in the inverse direction.
+func (t *Transformation) Inverse(coord Coord) (Coord, error) {
+	return t.Trans(DirectionInv, coord)
+}
+
+// InverseArray transforms coorsd in the inverse direction.
+func (t *Transformation) InverseArray(coords []Coord) error {
+	return t.TransArray(DirectionInv, coords)
+}
+
+// InverseFlatCoords transforms flatCoords in the inverse direction.
+func (t *Transformation) InverseFlatCoords(flatCoords []float64, stride, zIndex, mIndex int) error {
+	return t.TransFlatCoords(DirectionInv, flatCoords, stride, zIndex, mIndex)
+}
+
 // Trans transforms a single Coord.
 func (t *Transformation) Trans(direction Direction, coord Coord) (Coord, error) {
 	t.context.Lock()
