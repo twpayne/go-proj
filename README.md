@@ -17,7 +17,7 @@ Package go-proj provides an interface to [PROJ](https://proj.org).
 
 ```go
 func ExampleTransformation_Forward() {
-	transformation, err := proj.NewContext().NewCRSToCRSTransformation("EPSG:4326", "EPSG:3857", nil)
+	transformation, err := proj.NewCRSToCRSTransformation("EPSG:4326", "EPSG:3857", nil)
 	if err != nil {
 		panic(err)
 	}

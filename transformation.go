@@ -27,6 +27,12 @@ type Transformation struct {
 
 // NewCRSToCRSTransformation returns a new Transformation from sourceCRS to
 // targetCRS and optional area.
+func NewCRSToCRSTransformation(sourceCRS, targetCRS string, area *Area) (*Transformation, error) {
+	return defaultContext.NewCRSToCRSTransformation(sourceCRS, targetCRS, area)
+}
+
+// NewCRSToCRSTransformation returns a new Transformation from sourceCRS to
+// targetCRS and optional area.
 func (c *Context) NewCRSToCRSTransformation(sourceCRS, targetCRS string, area *Area) (*Transformation, error) {
 	c.Lock()
 	defer c.Unlock()
