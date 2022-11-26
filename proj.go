@@ -94,6 +94,23 @@ func (c *Context) newError(errno int) *Error {
 	}
 }
 
+// NewCoord returns a new Coord.
+func NewCoord(x, y, z, m float64) Coord {
+	return Coord{x, y, z, m}
+}
+
+// X returns c's X coordinate.
+func (c *Coord) X() float64 { return c[0] }
+
+// Y returns c's Y coordinate.
+func (c *Coord) Y() float64 { return c[1] }
+
+// Z returns c's Z coordinate.
+func (c *Coord) Z() float64 { return c[2] }
+
+// M returns c's M coordinate.
+func (c *Coord) M() float64 { return c[3] }
+
 func (e *Error) Error() string {
 	return e.context.errnoString(e.errno)
 }
