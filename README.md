@@ -16,7 +16,7 @@ Package go-proj provides an interface to [PROJ](https://proj.org).
 ## Example
 
 ```go
-func ExampleTransformation_Trans() {
+func ExampleTransformation_Forward() {
 	transformation, err := proj.NewContext().NewCRSToCRSTransformation("EPSG:4326", "EPSG:3857", nil)
 	if err != nil {
 		panic(err)
@@ -24,7 +24,7 @@ func ExampleTransformation_Trans() {
 
 	// Convert Zürich's WGS84 latitude/longitude to Web Mercator.
 	zurichEPSG4326 := proj.Coord{47.374444, 8.541111, 408, 0}
-	zurichEPSG3857, err := transformation.Trans(proj.DirectionFwd, zurichEPSG4326)
+	zurichEPSG3857, err := transformation.Forward(zurichEPSG4326)
 	if err != nil {
 		panic(err)
 	}
