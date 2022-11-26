@@ -1,0 +1,102 @@
+linters:
+  enable:
+  - asasalint
+  - asciicheck
+  - bidichk
+  - bodyclose
+  - containedctx
+  - contextcheck
+  - decorder
+  - depguard
+  - dogsled
+  - dupl
+  - durationcheck
+  - errcheck
+  - errchkjson
+  - errname
+  - errorlint
+  - execinquery
+  - exhaustive
+  - exportloopref
+  - forbidigo
+  - forcetypeassert
+  - goconst
+  - gocritic
+  - godot
+  - goerr113
+  - gofmt
+  - gofumpt
+  - goimports
+  - gomodguard
+  - goprintffuncname
+  - gosec
+  - gosimple
+  - govet
+  - grouper
+  - importas
+  - ineffassign
+  - interfacebloat
+  - ireturn
+  - misspell
+  - nakedret
+  - nilerr
+  - noctx
+  - nonamedreturns
+  - nosprintfhostport
+  - prealloc
+  - predeclared
+  - staticcheck
+  - stylecheck
+  - tagliatelle
+  - tenv
+  - thelper
+  - typecheck
+  - unconvert
+  - unparam
+  - unused
+  - whitespace
+  disable:
+  - cyclop
+  - exhaustivestruct
+  - exhaustruct
+  - funlen
+  - gci
+  - gochecknoglobals
+  - gochecknoinits
+  - gocognit
+  - gocyclo
+  - godox
+  - goheader
+  - gomnd
+  - gomoddirectives
+  - ifshort
+  - lll
+  - maintidx
+  - makezero
+  - nestif
+  - nlreturn
+  - nlreturn
+  - nolintlint
+  - paralleltest
+  - promlinter
+  - revive
+  - rowserrcheck # https://github.com/golangci/golangci-lint/issues/2649
+  - scopelint
+  - sqlclosecheck # https://github.com/golangci/golangci-lint/issues/2649
+  - structcheck # https://github.com/golangci/golangci-lint/issues/2649
+  - testpackage
+  - tparallel
+  - varnamelen
+  - wastedassign # https://github.com/golangci/golangci-lint/issues/2649
+  - wrapcheck
+  - wsl
+
+linters-settings:
+  goimports:
+    local-prefixes: github.com/twpayne/go-proj
+
+issues:
+  exclude-rules:
+  - linters:
+    - goerr113
+    text: "do not define dynamic errors, use wrapped static errors instead"
