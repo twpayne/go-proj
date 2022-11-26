@@ -1,28 +1,97 @@
-// Package proj implements common geospatial projections.
+// Package proj provides an interface to PROJ. See https://proj.org.
 package proj
 
+// #cgo LDFLAGS: -lproj
+// #include <proj.h>
+import "C"
+
 import (
-	"math"
+	"runtime"
+	"sync"
 )
 
-// A T is a generic projection.
-type T interface {
-	Code() int
-	Forward(lat, lon float64) (E float64, N float64)
-	Reverse(E, N float64) (lat float64, lon float64)
+// Version.
+const (
+	VersionMajor = C.PROJ_VERSION_MAJOR
+	VersionMinor = C.PROJ_VERSION_MINOR
+	VersionPatch = C.PROJ_VERSION_PATCH
+)
+
+// An Area is an area.
+type Area struct {
+	pjArea *C.PJ_AREA
 }
 
-// dms converts d degrees, m minutes, and s seconds to degrees.
-func dms(d, m, s float64) float64 {
-	return d + m/60 + s/3600
+// A Context is a context.
+type Context struct {
+	sync.Mutex
+	pjContext *C.PJ_CONTEXT
 }
 
-// rad converts x from degrees to radians.
-func rad(x float64) float64 {
-	return math.Pi * x / 180
+// A coord is a coordinate.
+type Coord [4]float64
+
+// An Error is an error.
+type Error struct {
+	context *Context
+	errno   int
 }
 
-func init() {
-	initUTM()
-	initEPSG()
+// NewArea returns a new Area.
+func NewArea(westLonDegree, southLatDegree, eastLonDegree, northLatDegree float64) *Area {
+	pjArea := C.proj_area_create()
+	C.proj_area_set_bbox(pjArea, (C.double)(westLonDegree), (C.double)(southLatDegree), (C.double)(eastLonDegree), (C.double)(northLatDegree))
+	a := &Area{
+		pjArea: pjArea,
+	}
+	runtime.SetFinalizer(a, (*Area).Destroy)
+	return a
+}
+
+// Destroy frees all resources associated with a.
+func (a *Area) Destroy() {
+	if a.pjArea != nil {
+		C.proj_area_destroy(a.pjArea)
+		a.pjArea = nil
+	}
+}
+
+// NewContext returns a new Context.
+func NewContext() *Context {
+	pjContext := C.proj_context_create()
+	C.proj_log_level(pjContext, C.PJ_LOG_NONE)
+	c := &Context{
+		pjContext: pjContext,
+	}
+	runtime.SetFinalizer(c, (*Context).Destroy)
+	return c
+}
+
+// Destroy frees all resources associated with c.
+func (c *Context) Destroy() {
+	c.Lock()
+	defer c.Unlock()
+	if c.pjContext != nil {
+		C.proj_context_destroy(c.pjContext)
+		c.pjContext = nil
+	}
+}
+
+// ErrnoString returns the text representation of errno.
+func (c *Context) ErrnoString(errno int) string {
+	c.Lock()
+	defer c.Unlock()
+	return C.GoString(C.proj_context_errno_string(c.pjContext, (C.int)(errno)))
+}
+
+// NewError returns a new error with number errno.
+func (c *Context) NewError(errno int) *Error {
+	return &Error{
+		context: c,
+		errno:   errno,
+	}
+}
+
+func (e *Error) Error() string {
+	return e.context.ErrnoString(e.errno)
 }

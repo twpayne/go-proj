@@ -1,9 +1,0 @@
-language: go
-
-script:
-        - go test -v ./...
-        - go test -cover -race ./...
-        - go vet ./...
-        - test -z "$(go fmt ./...)"
-
-sudo: false
