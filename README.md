@@ -23,13 +23,13 @@ func ExampleTransformation_Forward() {
 	}
 
 	// Convert Zürich's WGS84 latitude/longitude to Web Mercator.
-	zurichEPSG4326 := proj.Coord{47.374444, 8.541111, 408, 0}
+	zurichEPSG4326 := proj.NewCoord(47.374444, 8.541111, 408, 0)
 	zurichEPSG3857, err := transformation.Forward(zurichEPSG4326)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("x=%.6f y=%.6f z=%.6f", zurichEPSG3857[0], zurichEPSG4326[1], zurichEPSG3857[2])
-	// Output: x=950792.127329 y=8.541111 z=408.000000
+	fmt.Printf("x=%.6f y=%.6f z=%.6f", zurichEPSG3857.X(), zurichEPSG3857.Y(), zurichEPSG3857.Z())
+	// Output: x=950792.127329 y=6003408.475803 z=408.000000
 }
 ```
 
