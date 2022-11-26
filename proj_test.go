@@ -25,10 +25,11 @@ func TestContextNewCRSToCRSTransformation(t *testing.T) {
 	require.NotNil(t, context)
 
 	for _, tc := range []struct {
-		name        string
-		sourceCRS   string
-		targetCRS   string
-		expectedErr string
+		name          string
+		sourceCRS     string
+		targetCRS     string
+		expectedErr   string
+		expectedErrV8 string
 	}{
 		{
 			name:      "EPSG:4326_to_EPSG;3857",
@@ -36,18 +37,22 @@ func TestContextNewCRSToCRSTransformation(t *testing.T) {
 			targetCRS: "EPSG:3857",
 		},
 		{
-			name:        "EPSG:4326_to_invalid",
-			sourceCRS:   "EPSG:4326",
-			targetCRS:   "invalid",
-			expectedErr: "Invalid PROJ string syntax",
+			name:          "EPSG:4326_to_invalid",
+			sourceCRS:     "EPSG:4326",
+			targetCRS:     "invalid",
+			expectedErr:   "Invalid PROJ string syntax",
+			expectedErrV8: "Unknown error (code 4096)",
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			transformation, err := context.NewCRSToCRSTransformation(tc.sourceCRS, tc.targetCRS, nil)
-			if tc.expectedErr != "" {
+			switch transformation, err := context.NewCRSToCRSTransformation(tc.sourceCRS, tc.targetCRS, nil); {
+			case tc.expectedErr != "" && proj.VersionMajor >= 9:
 				assert.EqualError(t, err, tc.expectedErr)
 				assert.Nil(t, transformation)
-			} else {
+			case tc.expectedErrV8 != "" && proj.VersionMajor < 9:
+				assert.EqualError(t, err, tc.expectedErrV8)
+				assert.Nil(t, transformation)
+			default:
 				assert.NoError(t, err)
 				assert.NotNil(t, transformation)
 			}
