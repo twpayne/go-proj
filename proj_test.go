@@ -25,11 +25,10 @@ func TestContextNewCRSToCRSTransformation(t *testing.T) {
 	require.NotNil(t, context)
 
 	for _, tc := range []struct {
-		name          string
-		sourceCRS     string
-		targetCRS     string
-		expectedErr   string
-		expectedErrV8 string
+		name        string
+		sourceCRS   string
+		targetCRS   string
+		expectedErr map[int]string
 	}{
 		{
 			name:      "EPSG:4326_to_EPSG;3857",
@@ -37,22 +36,22 @@ func TestContextNewCRSToCRSTransformation(t *testing.T) {
 			targetCRS: "EPSG:3857",
 		},
 		{
-			name:          "EPSG:4326_to_invalid",
-			sourceCRS:     "EPSG:4326",
-			targetCRS:     "invalid",
-			expectedErr:   "Invalid PROJ string syntax",
-			expectedErrV8: "Unknown error (code 4096)",
+			name:      "EPSG:4326_to_invalid",
+			sourceCRS: "EPSG:4326",
+			targetCRS: "invalid",
+			expectedErr: map[int]string{
+				6: "generic error of unknown origin",
+				8: "Unknown error (code 4096)",
+				9: "Invalid PROJ string syntax",
+			},
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			switch transformation, err := context.NewCRSToCRSTransformation(tc.sourceCRS, tc.targetCRS, nil); {
-			case tc.expectedErr != "" && proj.VersionMajor >= 9:
-				assert.EqualError(t, err, tc.expectedErr)
+			transformation, err := context.NewCRSToCRSTransformation(tc.sourceCRS, tc.targetCRS, nil)
+			if tc.expectedErr != nil {
+				assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
 				assert.Nil(t, transformation)
-			case tc.expectedErrV8 != "" && proj.VersionMajor < 9:
-				assert.EqualError(t, err, tc.expectedErrV8)
-				assert.Nil(t, transformation)
-			default:
+			} else {
 				assert.NoError(t, err)
 				assert.NotNil(t, transformation)
 			}
@@ -191,18 +190,22 @@ func TestTransformationTransError(t *testing.T) {
 		name        string
 		direction   proj.Direction
 		coord       proj.Coord
-		expectedErr string
+		expectedErr map[int]string
 	}{
 		{
-			name:        "invalid_coordinate",
-			direction:   proj.DirectionFwd,
-			coord:       proj.Coord{91, 0, 0, 0},
-			expectedErr: "Invalid coordinate",
+			name:      "invalid_coordinate",
+			direction: proj.DirectionFwd,
+			coord:     proj.Coord{91, 0, 0, 0},
+			expectedErr: map[int]string{
+				6: "latitude or longitude exceeded limits",
+				8: "Invalid coordinate",
+				9: "Invalid coordinate",
+			},
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			actualCoord, err := transformation.Trans(tc.direction, tc.coord)
-			assert.EqualError(t, err, tc.expectedErr)
+			assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
 			assert.Equal(t, proj.Coord{}, actualCoord)
 
 			_, err = transformation.Trans(tc.direction, proj.Coord{})
