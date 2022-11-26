@@ -2,7 +2,7 @@
 package proj
 
 // #cgo LDFLAGS: -lproj
-// #include <proj.h>
+// #include "go-proj.h"
 import "C"
 
 import (
