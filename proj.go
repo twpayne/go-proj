@@ -1,7 +1,7 @@
 // Package proj provides an interface to PROJ. See https://proj.org.
 package proj
 
-// #cgo LDFLAGS: -lproj
+// #cgo pkg-config: proj
 // #include "go-proj.h"
 import "C"
 
