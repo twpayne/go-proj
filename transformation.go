@@ -76,6 +76,11 @@ func (t *Transformation) Forward(coord Coord) (Coord, error) {
 	return t.Trans(DirectionFwd, coord)
 }
 
+// ForwardBounds transforms bounds in the forward direction.
+func (t *Transformation) ForwardBounds(bounds Bounds, densifyPoints int) (Bounds, error) {
+	return t.TransBounds(DirectionFwd, bounds, densifyPoints)
+}
+
 // ForwardArray transforms coorsd in the forward direction.
 func (t *Transformation) ForwardArray(coords []Coord) error {
 	return t.TransArray(DirectionFwd, coords)
@@ -94,6 +99,11 @@ func (t *Transformation) Inverse(coord Coord) (Coord, error) {
 // InverseArray transforms coorsd in the inverse direction.
 func (t *Transformation) InverseArray(coords []Coord) error {
 	return t.TransArray(DirectionInv, coords)
+}
+
+// InverseBounds transforms bounds in the forward direction.
+func (t *Transformation) InverseBounds(bounds Bounds, densifyPoints int) (Bounds, error) {
+	return t.TransBounds(DirectionInv, bounds, densifyPoints)
 }
 
 // InverseFlatCoords transforms flatCoords in the inverse direction.
@@ -132,6 +142,20 @@ func (t *Transformation) TransArray(direction Direction, coords []Coord) error {
 		return t.context.newError(errno)
 	}
 	return nil
+}
+
+func (t *Transformation) TransBounds(direction Direction, bounds Bounds, densifyPoints int) (Bounds, error) {
+	t.context.Lock()
+	defer t.context.Unlock()
+
+	var transBounds Bounds
+	if C.proj_trans_bounds(t.context.pjContext, t.pj, (C.PJ_DIRECTION)(direction),
+		(C.double)(bounds.XMin), (C.double)(bounds.YMin), (C.double)(bounds.XMax), (C.double)(bounds.YMax),
+		(*C.double)(&transBounds.XMin), (*C.double)(&transBounds.YMin), (*C.double)(&transBounds.XMax), (*C.double)(&transBounds.YMax),
+		C.int(densifyPoints)) == 0 {
+		return Bounds{}, t.context.newError(int(C.proj_errno(t.pj)))
+	}
+	return transBounds, nil
 }
 
 // TransFlatCoords transforms an array of flat coordinates.

@@ -22,6 +22,13 @@ type Area struct {
 	pjArea *C.PJ_AREA
 }
 
+type Bounds struct {
+	XMin float64
+	YMin float64
+	XMax float64
+	YMax float64
+}
+
 // A Context is a context.
 type Context struct {
 	sync.Mutex

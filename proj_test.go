@@ -12,6 +12,10 @@ import (
 )
 
 var (
+	bernEPSG4326    = proj.Coord{46.948056, 7.4475, 540, 0}
+	bernEPSG2056    = proj.Coord{2600675.0876650945, 1199663.542715189, 540, 0}
+	zurichEPSG4326  = proj.Coord{47.374444, 8.541111, 408, 0}
+	zurichEPSG2056  = proj.Coord{2683263.251826082, 1247651.9664695852, 408, 0}
 	newYorkEPSG3857 = proj.Coord{-8238322.592110482, 4970068.348185822, 10, 0}
 	newYorkEPSG4326 = proj.Coord{40.712778, -74.006111, 10, 0}
 	parisEPSG3857   = proj.Coord{261848.15527273554, 6250566.54904563, 78, 0}
@@ -67,6 +71,8 @@ func TestTransformationTrans(t *testing.T) {
 		area        *proj.Area
 		sourceCoord proj.Coord
 		targetCoord proj.Coord
+		sourceDelta float64
+		targetDelta float64
 	}{
 		{
 			name:        "EPSG:4326_to_EPSG:3857_origin",
@@ -74,6 +80,8 @@ func TestTransformationTrans(t *testing.T) {
 			targetCRS:   "EPSG:3857",
 			sourceCoord: proj.Coord{},
 			targetCoord: proj.Coord{},
+			sourceDelta: 1e-13,
+			targetDelta: 1e1,
 		},
 		{
 			name:        "EPSG:4326_to_EPSG:3857_origin_with_area",
@@ -82,6 +90,26 @@ func TestTransformationTrans(t *testing.T) {
 			area:        proj.NewArea(-180, -85, 180, 85),
 			sourceCoord: proj.Coord{},
 			targetCoord: proj.Coord{},
+			sourceDelta: 1e-13,
+			targetDelta: 1e1,
+		},
+		{
+			name:        "EPSG:4326_to_EPSG:2056_bern",
+			sourceCRS:   "EPSG:4326",
+			targetCRS:   "EPSG:2056",
+			sourceCoord: bernEPSG4326,
+			targetCoord: bernEPSG2056,
+			sourceDelta: 1e-6,
+			targetDelta: 1e1,
+		},
+		{
+			name:        "EPSG:4326_to_EPSG:2056_zurich",
+			sourceCRS:   "EPSG:4326",
+			targetCRS:   "EPSG:2056",
+			sourceCoord: zurichEPSG4326,
+			targetCoord: zurichEPSG2056,
+			sourceDelta: 1e-6,
+			targetDelta: 1e1,
 		},
 		{
 			name:        "EPSG:4326_to_EPSG:3857_new_york",
@@ -89,6 +117,8 @@ func TestTransformationTrans(t *testing.T) {
 			targetCRS:   "EPSG:3857",
 			sourceCoord: newYorkEPSG4326,
 			targetCoord: newYorkEPSG3857,
+			sourceDelta: 1e-13,
+			targetDelta: 1e1,
 		},
 		{
 			name:        "EPSG:4326_to_EPSG:3857_paris",
@@ -96,6 +126,8 @@ func TestTransformationTrans(t *testing.T) {
 			targetCRS:   "EPSG:3857",
 			sourceCoord: parisEPSG4326,
 			targetCoord: parisEPSG3857,
+			sourceDelta: 1e-13,
+			targetDelta: 1e1,
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -110,11 +142,11 @@ func TestTransformationTrans(t *testing.T) {
 
 			actualTargetCoord, err := transformation.Forward(tc.sourceCoord)
 			require.NoError(t, err)
-			assert.InDeltaSlice(t, tc.targetCoord[:], actualTargetCoord[:], 1e1)
+			assert.InDeltaSlice(t, tc.targetCoord[:], actualTargetCoord[:], tc.targetDelta)
 
 			actualSourceCoord, err := transformation.Inverse(tc.targetCoord)
 			require.NoError(t, err)
-			assert.InDeltaSlice(t, tc.sourceCoord[:], actualSourceCoord[:], 1e-13)
+			assert.InDeltaSlice(t, tc.sourceCoord[:], actualSourceCoord[:], tc.sourceDelta)
 		})
 	}
 }
@@ -172,6 +204,63 @@ func TestTransformationTransArray(t *testing.T) {
 			for i, actualSourceCoord := range actualSourceCoords {
 				assert.InDeltaSlice(t, tc.sourceCoords[i][:], actualSourceCoord[:], 1e-13)
 			}
+		})
+	}
+}
+
+func TestTransformationTransBounds(t *testing.T) {
+	if proj.VersionMajor < 8 || proj.VersionMajor == 8 && proj.VersionMinor < 2 {
+		t.Skip()
+	}
+
+	defer runtime.GC()
+
+	context := proj.NewContext()
+	require.NotNil(t, context)
+
+	transformation, err := context.NewCRSToCRSTransformation("EPSG:4326", "EPSG:2056", nil)
+	require.NoError(t, err)
+	require.NotNil(t, transformation)
+
+	for _, tc := range []struct {
+		name         string
+		sourceBounds proj.Bounds
+		targetBounds proj.Bounds
+		sourceDelta  float64
+		targetDelta  float64
+	}{
+		{
+			name: "EPSG:4326_to_EPSG:2056",
+			sourceBounds: proj.Bounds{
+				XMin: bernEPSG4326.X(),
+				YMin: bernEPSG4326.Y(),
+				XMax: zurichEPSG4326.X(),
+				YMax: zurichEPSG4326.Y(),
+			},
+			targetBounds: proj.Bounds{
+				XMin: bernEPSG2056.X(),
+				YMin: bernEPSG2056.Y(),
+				XMax: zurichEPSG2056.X(),
+				YMax: zurichEPSG2056.Y(),
+			},
+			sourceDelta: 1e-2,
+			targetDelta: 1e3,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			targetBounds, err := transformation.ForwardBounds(tc.sourceBounds, 21)
+			assert.NoError(t, err)
+			assert.InDelta(t, tc.targetBounds.XMin, targetBounds.XMin, tc.targetDelta)
+			assert.InDelta(t, tc.targetBounds.YMin, targetBounds.YMin, tc.targetDelta)
+			assert.InDelta(t, tc.targetBounds.XMax, targetBounds.XMax, tc.targetDelta)
+			assert.InDelta(t, tc.targetBounds.YMax, targetBounds.YMax, tc.targetDelta)
+
+			sourceBounds, err := transformation.InverseBounds(tc.targetBounds, 21)
+			assert.NoError(t, err)
+			assert.InDelta(t, tc.sourceBounds.XMin, sourceBounds.XMin, tc.sourceDelta)
+			assert.InDelta(t, tc.sourceBounds.YMin, sourceBounds.YMin, tc.sourceDelta)
+			assert.InDelta(t, tc.sourceBounds.XMax, sourceBounds.XMax, tc.sourceDelta)
+			assert.InDelta(t, tc.sourceBounds.YMax, sourceBounds.YMax, tc.sourceDelta)
 		})
 	}
 }
