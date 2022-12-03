@@ -7,7 +7,6 @@ import "C"
 
 import (
 	"runtime"
-	"sync"
 )
 
 // Version.
@@ -29,12 +28,6 @@ type Bounds struct {
 	YMax float64
 }
 
-// A Context is a context.
-type Context struct {
-	sync.Mutex
-	pjContext *C.PJ_CONTEXT
-}
-
 // A coord is a coordinate.
 type Coord [4]float64
 
@@ -43,8 +36,6 @@ type Error struct {
 	context *Context
 	errno   int
 }
-
-var defaultContext = &Context{}
 
 // NewArea returns a new Area.
 func NewArea(westLonDegree, southLatDegree, eastLonDegree, northLatDegree float64) *Area {
@@ -63,56 +54,6 @@ func (a *Area) Destroy() {
 		C.proj_area_destroy(a.pjArea)
 		a.pjArea = nil
 	}
-}
-
-// NewContext returns a new Context.
-func NewContext() *Context {
-	pjContext := C.proj_context_create()
-	C.proj_log_level(pjContext, C.PJ_LOG_NONE)
-	c := &Context{
-		pjContext: pjContext,
-	}
-	runtime.SetFinalizer(c, (*Context).Destroy)
-	return c
-}
-
-// Destroy frees all resources associated with c.
-func (c *Context) Destroy() {
-	c.Lock()
-	defer c.Unlock()
-	if c.pjContext != nil {
-		C.proj_context_destroy(c.pjContext)
-		c.pjContext = nil
-	}
-}
-
-// errnoString returns the text representation of errno.
-func (c *Context) errnoString(errno int) string {
-	c.Lock()
-	defer c.Unlock()
-	return C.GoString(C.proj_context_errno_string(c.pjContext, (C.int)(errno)))
-}
-
-// newError returns a new error with number errno.
-func (c *Context) newError(errno int) *Error {
-	return &Error{
-		context: c,
-		errno:   errno,
-	}
-}
-
-// newTransformation returns a new *Transformation or an error.
-func (c *Context) newTransformation(pj *C.PJ) (*Transformation, error) {
-	if pj == nil {
-		return nil, c.newError(int(C.proj_context_errno(c.pjContext)))
-	}
-
-	transformation := &Transformation{
-		context: c,
-		pj:      pj,
-	}
-	runtime.SetFinalizer(transformation, (*Transformation).Destroy)
-	return transformation, nil
 }
 
 // NewCoord returns a new Coord.
