@@ -101,6 +101,20 @@ func (c *Context) newError(errno int) *Error {
 	}
 }
 
+// newTransformation returns a new *Transformation or an error.
+func (c *Context) newTransformation(pj *C.PJ) (*Transformation, error) {
+	if pj == nil {
+		return nil, c.newError(int(C.proj_context_errno(c.pjContext)))
+	}
+
+	transformation := &Transformation{
+		context: c,
+		pj:      pj,
+	}
+	runtime.SetFinalizer(transformation, (*Transformation).Destroy)
+	return transformation, nil
+}
+
 // NewCoord returns a new Coord.
 func NewCoord(x, y, z, m float64) Coord {
 	return Coord{x, y, z, m}

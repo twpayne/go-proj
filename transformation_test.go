@@ -63,6 +63,44 @@ func TestContext_NewCRSToCRSTransformation(t *testing.T) {
 	}
 }
 
+func TestContext_NewTransformation(t *testing.T) {
+	defer runtime.GC()
+
+	context := proj.NewContext()
+	require.NotNil(t, context)
+
+	for _, tc := range []struct {
+		definition  string
+		expectedErr map[int]string
+	}{
+		{
+			definition: "epsg:4326",
+		},
+		{
+			definition: "+proj=etmerc +lat_0=38 +lon_0=125 +ellps=bessel",
+		},
+		{
+			definition: "invalid",
+			expectedErr: map[int]string{
+				6: "generic error of unknown origin",
+				8: "Unknown error (code 4096)",
+				9: "Invalid PROJ string syntax",
+			},
+		},
+	} {
+		t.Run(tc.definition, func(t *testing.T) {
+			transformation, err := context.NewTransformation(tc.definition)
+			if tc.expectedErr != nil {
+				assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
+				assert.Nil(t, transformation)
+			} else {
+				assert.NoError(t, err)
+				assert.NotNil(t, transformation)
+			}
+		})
+	}
+}
+
 func TestTransformation_Trans(t *testing.T) {
 	for _, tc := range []struct {
 		name        string
