@@ -6,10 +6,12 @@ linters:
   - bodyclose
   - containedctx
   - contextcheck
+  - cyclop
   - decorder
   - depguard
   - dogsled
   - dupl
+  - dupword
   - durationcheck
   - errcheck
   - errchkjson
@@ -20,13 +22,20 @@ linters:
   - exportloopref
   - forbidigo
   - forcetypeassert
+  - gci
+  - gochecknoinits
+  - gocognit
   - goconst
   - gocritic
+  - gocyclo
   - godot
+  - godox
   - goerr113
   - gofmt
   - gofumpt
+  - goheader
   - goimports
+  - gomoddirectives
   - gomodguard
   - goprintffuncname
   - gosec
@@ -37,61 +46,59 @@ linters:
   - ineffassign
   - interfacebloat
   - ireturn
+  - loggercheck
+  - maintidx
+  - makezero
   - misspell
   - nakedret
+  - nestif
   - nilerr
+  - nilnil
   - noctx
+  - nolintlint
   - nonamedreturns
   - nosprintfhostport
   - prealloc
   - predeclared
+  - promlinter
+  - reassign
+  - revive
   - staticcheck
   - stylecheck
   - tagliatelle
   - tenv
+  - testableexamples
+  - testpackage
   - thelper
+  - tparallel
   - typecheck
   - unconvert
   - unparam
   - unused
+  - usestdlibvars
   - whitespace
+  - wrapcheck
   disable:
-  - cyclop
-  - exhaustivestruct
   - exhaustruct
   - funlen
-  - gci
   - gochecknoglobals
-  - gochecknoinits
-  - gocognit
-  - gocyclo
-  - godox
-  - goheader
   - gomnd
-  - gomoddirectives
-  - ifshort
   - lll
-  - maintidx
-  - makezero
-  - nestif
   - nlreturn
-  - nlreturn
-  - nolintlint
   - paralleltest
-  - promlinter
-  - revive
   - rowserrcheck # https://github.com/golangci/golangci-lint/issues/2649
-  - scopelint
   - sqlclosecheck # https://github.com/golangci/golangci-lint/issues/2649
   - structcheck # https://github.com/golangci/golangci-lint/issues/2649
-  - testpackage
-  - tparallel
   - varnamelen
   - wastedassign # https://github.com/golangci/golangci-lint/issues/2649
-  - wrapcheck
   - wsl
 
 linters-settings:
+  gci:
+    sections:
+    - standard
+    - default
+    - prefix(github.com/twpayne/go-proj)
   goimports:
     local-prefixes: github.com/twpayne/go-proj
 

@@ -24,6 +24,8 @@ type Transformation struct {
 }
 
 // A ProjInfo contains information about a Proj.
+//
+//nolint:revive
 type ProjInfo struct {
 	ID          string
 	Description string
