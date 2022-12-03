@@ -43,34 +43,50 @@ func TestPJ_Info(t *testing.T) {
 }
 
 func TestPJ_LPDist(t *testing.T) {
+	if proj.VersionMajor < 7 {
+		t.Skip("distance functions not tested")
+	}
+
 	defer runtime.GC()
 
 	context := proj.NewContext()
 	require.NotNil(t, context)
 
 	for i, tc := range []struct {
-		definition      string
-		a               proj.Coord
-		b               proj.Coord
-		expectedLPDist  float64
-		expectedLPZDist float64
-		delta           float64
+		definition                 string
+		a                          proj.Coord
+		b                          proj.Coord
+		expectedLPDist             float64
+		expectedLPZDist            float64
+		expectedGeodDist           float64
+		expectedGeodForwardAzimuth float64
+		expectedGeodReverseAzimuth float64
+		distDelta                  float64
+		azimuthDelta               float64
 	}{
 		{
-			definition:      "epsg:4326",
-			a:               bernEPSG4326.DegToRad(),
-			b:               zurichEPSG4326.DegToRad(),
-			expectedLPDist:  129762.08359988699,
-			expectedLPZDist: 129762.15073812571,
-			delta:           math.SmallestNonzeroFloat64,
+			definition:                 "epsg:4326",
+			a:                          bernEPSG4326.DegToRad(),
+			b:                          zurichEPSG4326.DegToRad(),
+			expectedLPDist:             129762.08359988699,
+			expectedLPZDist:            129762.15073812571,
+			expectedGeodDist:           129762.08359988699,
+			expectedGeodForwardAzimuth: 21.20947946541022,
+			expectedGeodReverseAzimuth: 21.268782222540885,
+			distDelta:                  math.SmallestNonzeroFloat64,
+			azimuthDelta:               1e-13,
 		},
 		{
-			definition:      "epsg:4326",
-			a:               newYorkEPSG4326.DegToRad(),
-			b:               parisEPSG4326.DegToRad(),
-			expectedLPDist:  8494402.471778858,
-			expectedLPZDist: 8494402.472051037,
-			delta:           math.SmallestNonzeroFloat64,
+			definition:                 "epsg:4326",
+			a:                          newYorkEPSG4326.DegToRad(),
+			b:                          parisEPSG4326.DegToRad(),
+			expectedLPDist:             8494402.471778858,
+			expectedLPZDist:            8494402.472051037,
+			expectedGeodDist:           8494402.471778858,
+			expectedGeodForwardAzimuth: 8.381709060115105,
+			expectedGeodReverseAzimuth: 2.310935629050629,
+			distDelta:                  math.SmallestNonzeroFloat64,
+			azimuthDelta:               1e-13,
 		},
 	} {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
@@ -78,10 +94,20 @@ func TestPJ_LPDist(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, pj)
 
-			assert.InDelta(t, tc.expectedLPDist, pj.LPDist(tc.a, tc.b), tc.delta)
-			assert.InDelta(t, tc.expectedLPDist, pj.LPDist(tc.b, tc.a), tc.delta)
-			assert.InDelta(t, tc.expectedLPZDist, pj.LPZDist(tc.a, tc.b), tc.delta)
-			assert.InDelta(t, tc.expectedLPZDist, pj.LPZDist(tc.b, tc.a), tc.delta)
+			assert.InDelta(t, tc.expectedLPDist, pj.LPDist(tc.a, tc.b), tc.distDelta)
+			assert.InDelta(t, tc.expectedLPDist, pj.LPDist(tc.b, tc.a), tc.distDelta)
+			assert.InDelta(t, tc.expectedLPZDist, pj.LPZDist(tc.a, tc.b), tc.distDelta)
+			assert.InDelta(t, tc.expectedLPZDist, pj.LPZDist(tc.b, tc.a), tc.distDelta)
+
+			actualGeodDist, actualGeodForwardAzimuth, actualGeodReverseAzimuth := pj.Geod(tc.a, tc.b)
+			assert.Equal(t, tc.expectedGeodDist, actualGeodDist)
+			assert.InDelta(t, tc.expectedGeodForwardAzimuth, actualGeodForwardAzimuth, tc.azimuthDelta)
+			assert.InDelta(t, tc.expectedGeodReverseAzimuth, actualGeodReverseAzimuth, tc.azimuthDelta)
+
+			actualReverseGeodDist, actualReverseGeodForwardAzimuth, actualReverseGeodReverseAzimuth := pj.Geod(tc.b, tc.a)
+			assert.Equal(t, tc.expectedGeodDist, actualReverseGeodDist)
+			assert.InDelta(t, tc.expectedGeodForwardAzimuth, 180+actualReverseGeodReverseAzimuth, tc.azimuthDelta)
+			assert.InDelta(t, tc.expectedGeodReverseAzimuth, 180+actualReverseGeodForwardAzimuth, tc.azimuthDelta)
 		})
 	}
 }

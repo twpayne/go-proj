@@ -62,6 +62,15 @@ func (p *PJ) ForwardFlatCoords(flatCoords []float64, stride, zIndex, mIndex int)
 	return p.TransFlatCoords(DirectionFwd, flatCoords, stride, zIndex, mIndex)
 }
 
+// Geod returns the distance, forward azimuth, and reverse azimuth between a and b.
+func (p *PJ) Geod(a, b Coord) (float64, float64, float64) {
+	p.context.Lock()
+	defer p.context.Unlock()
+	cCoord := C.proj_geod(p.pj, *(*C.PJ_COORD)(unsafe.Pointer(&a)), *(*C.PJ_COORD)(unsafe.Pointer(&b)))
+	cGeod := *(*C.PJ_GEOD)(unsafe.Pointer(&cCoord))
+	return (float64)(cGeod.s), (float64)(cGeod.a1), (float64)(cGeod.a2)
+}
+
 // GetLastUsedOperation returns the operation used in the last call to Trans.
 func (p *PJ) GetLastUsedOperation() (*PJ, error) {
 	p.context.Lock()
