@@ -22,25 +22,25 @@ var (
 	parisEPSG4326   = proj.Coord{48.856613, 2.352222, 78, 0}
 )
 
-func TestTransformation_Info(t *testing.T) {
+func TestPJ_Info(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
 	require.NotNil(t, context)
 
-	transformation, err := context.NewTransformation("epsg:2056")
+	pj, err := context.New("epsg:2056")
 	require.NoError(t, err)
-	require.NotNil(t, transformation)
+	require.NotNil(t, pj)
 
-	expectedInfo := proj.ProjInfo{
+	expectedInfo := proj.PJInfo{
 		Description: "CH1903+ / LV95",
 		Accuracy:    -1,
 	}
-	actualInfo := transformation.Info()
+	actualInfo := pj.Info()
 	assert.Equal(t, expectedInfo, actualInfo)
 }
 
-func TestTransformation_Trans(t *testing.T) {
+func TestPJ_Trans(t *testing.T) {
 	for _, tc := range []struct {
 		name        string
 		sourceCRS   string
@@ -113,30 +113,30 @@ func TestTransformation_Trans(t *testing.T) {
 			context := proj.NewContext()
 			require.NotNil(t, context)
 
-			transformation, err := context.NewCRSToCRSTransformation(tc.sourceCRS, tc.targetCRS, tc.area)
+			pj, err := context.NewCRSToCRS(tc.sourceCRS, tc.targetCRS, tc.area)
 			require.NoError(t, err)
-			require.NotNil(t, transformation)
+			require.NotNil(t, pj)
 
-			actualTargetCoord, err := transformation.Forward(tc.sourceCoord)
+			actualTargetCoord, err := pj.Forward(tc.sourceCoord)
 			require.NoError(t, err)
 			assert.InDeltaSlice(t, tc.targetCoord[:], actualTargetCoord[:], tc.targetDelta)
 
-			actualSourceCoord, err := transformation.Inverse(tc.targetCoord)
+			actualSourceCoord, err := pj.Inverse(tc.targetCoord)
 			require.NoError(t, err)
 			assert.InDeltaSlice(t, tc.sourceCoord[:], actualSourceCoord[:], tc.sourceDelta)
 		})
 	}
 }
 
-func TestTransformation_Trans_error(t *testing.T) {
+func TestPJ_Trans_error(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
 	require.NotNil(t, context)
 
-	transformation, err := context.NewCRSToCRSTransformation("EPSG:4326", "EPSG:3857", nil)
+	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:3857", nil)
 	require.NoError(t, err)
-	require.NotNil(t, transformation)
+	require.NotNil(t, pj)
 
 	for _, tc := range []struct {
 		name        string
@@ -156,25 +156,25 @@ func TestTransformation_Trans_error(t *testing.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			actualCoord, err := transformation.Trans(tc.direction, tc.coord)
+			actualCoord, err := pj.Trans(tc.direction, tc.coord)
 			assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
 			assert.Equal(t, proj.Coord{}, actualCoord)
 
-			_, err = transformation.Trans(tc.direction, proj.Coord{})
+			_, err = pj.Trans(tc.direction, proj.Coord{})
 			require.NoError(t, err)
 		})
 	}
 }
 
-func TestTransformation_TransArray(t *testing.T) {
+func TestPJ_TransArray(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
 	require.NotNil(t, context)
 
-	transformation, err := context.NewCRSToCRSTransformation("EPSG:4326", "EPSG:3857", nil)
+	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:3857", nil)
 	require.NoError(t, err)
-	require.NotNil(t, transformation)
+	require.NotNil(t, pj)
 
 	for _, tc := range []struct {
 		name         string
@@ -209,13 +209,13 @@ func TestTransformation_TransArray(t *testing.T) {
 			require.Equal(t, len(tc.targetCoords), len(tc.sourceCoords))
 
 			actualTargetCoords := slices.Clone(tc.sourceCoords)
-			require.NoError(t, transformation.ForwardArray(actualTargetCoords))
+			require.NoError(t, pj.ForwardArray(actualTargetCoords))
 			for i, actualTargetCoord := range actualTargetCoords {
 				assert.InDeltaSlice(t, tc.targetCoords[i][:], actualTargetCoord[:], 1e1)
 			}
 
 			actualSourceCoords := slices.Clone(tc.targetCoords)
-			require.NoError(t, transformation.InverseArray(actualSourceCoords))
+			require.NoError(t, pj.InverseArray(actualSourceCoords))
 			for i, actualSourceCoord := range actualSourceCoords {
 				assert.InDeltaSlice(t, tc.sourceCoords[i][:], actualSourceCoord[:], 1e-13)
 			}
@@ -223,7 +223,7 @@ func TestTransformation_TransArray(t *testing.T) {
 	}
 }
 
-func TestTransformation_TransBounds(t *testing.T) {
+func TestPJ_TransBounds(t *testing.T) {
 	if proj.VersionMajor < 8 || proj.VersionMajor == 8 && proj.VersionMinor < 2 {
 		t.Skip()
 	}
@@ -233,9 +233,9 @@ func TestTransformation_TransBounds(t *testing.T) {
 	context := proj.NewContext()
 	require.NotNil(t, context)
 
-	transformation, err := context.NewCRSToCRSTransformation("EPSG:4326", "EPSG:2056", nil)
+	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:2056", nil)
 	require.NoError(t, err)
-	require.NotNil(t, transformation)
+	require.NotNil(t, pj)
 
 	for _, tc := range []struct {
 		name         string
@@ -263,14 +263,14 @@ func TestTransformation_TransBounds(t *testing.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			targetBounds, err := transformation.ForwardBounds(tc.sourceBounds, 21)
+			targetBounds, err := pj.ForwardBounds(tc.sourceBounds, 21)
 			assert.NoError(t, err)
 			assert.InDelta(t, tc.targetBounds.XMin, targetBounds.XMin, tc.targetDelta)
 			assert.InDelta(t, tc.targetBounds.YMin, targetBounds.YMin, tc.targetDelta)
 			assert.InDelta(t, tc.targetBounds.XMax, targetBounds.XMax, tc.targetDelta)
 			assert.InDelta(t, tc.targetBounds.YMax, targetBounds.YMax, tc.targetDelta)
 
-			sourceBounds, err := transformation.InverseBounds(tc.targetBounds, 21)
+			sourceBounds, err := pj.InverseBounds(tc.targetBounds, 21)
 			assert.NoError(t, err)
 			assert.InDelta(t, tc.sourceBounds.XMin, sourceBounds.XMin, tc.sourceDelta)
 			assert.InDelta(t, tc.sourceBounds.YMin, sourceBounds.YMin, tc.sourceDelta)
@@ -280,15 +280,15 @@ func TestTransformation_TransBounds(t *testing.T) {
 	}
 }
 
-func TestTransformation_TransFlatCoords(t *testing.T) {
+func TestPJ_TransFlatCoords(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
 	require.NotNil(t, context)
 
-	transformation, err := context.NewCRSToCRSTransformation("EPSG:4326", "EPSG:3857", nil)
+	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:3857", nil)
 	require.NoError(t, err)
-	require.NotNil(t, transformation)
+	require.NotNil(t, pj)
 
 	for _, tc := range []struct {
 		name             string
@@ -360,11 +360,11 @@ func TestTransformation_TransFlatCoords(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			actualTargetFlatCoords := slices.Clone(tc.sourceFlatCoords)
-			require.NoError(t, transformation.ForwardFlatCoords(actualTargetFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
+			require.NoError(t, pj.ForwardFlatCoords(actualTargetFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
 			assert.InDeltaSlice(t, tc.targetFlatCoords, actualTargetFlatCoords, 1e1)
 
 			actualSourceFlatCoords := slices.Clone(tc.targetFlatCoords)
-			require.NoError(t, transformation.InverseFlatCoords(actualSourceFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
+			require.NoError(t, pj.InverseFlatCoords(actualSourceFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
 			assert.InDeltaSlice(t, tc.sourceFlatCoords, actualSourceFlatCoords, 1e-9)
 		})
 	}

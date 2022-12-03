@@ -16,15 +16,15 @@ Package go-proj provides an interface to [PROJ](https://proj.org).
 ## Example
 
 ```go
-func ExampleTransformation_Forward() {
-	transformation, err := proj.NewCRSToCRSTransformation("EPSG:4326", "EPSG:3857", nil)
+func ExamplePJ_Forward() {
+	pj, err := proj.NewCRSToCRS("EPSG:4326", "EPSG:3857", nil)
 	if err != nil {
 		panic(err)
 	}
 
 	// Convert Zürich's WGS84 latitude/longitude to Web Mercator.
 	zurichEPSG4326 := proj.NewCoord(47.374444, 8.541111, 408, 0)
-	zurichEPSG3857, err := transformation.Forward(zurichEPSG4326)
+	zurichEPSG3857, err := pj.Forward(zurichEPSG4326)
 	if err != nil {
 		panic(err)
 	}
