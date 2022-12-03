@@ -1,6 +1,5 @@
 package proj
 
-// #include <stdlib.h>
 // #include "go-proj.h"
 import "C"
 
@@ -22,43 +21,6 @@ const (
 type Transformation struct {
 	context *Context
 	pj      *C.PJ
-}
-
-// NewCRSToCRSTransformation returns a new Transformation from sourceCRS to
-// targetCRS and optional area.
-func NewCRSToCRSTransformation(sourceCRS, targetCRS string, area *Area) (*Transformation, error) {
-	return defaultContext.NewCRSToCRSTransformation(sourceCRS, targetCRS, area)
-}
-
-// NewCRSToCRSTransformation returns a new Transformation from sourceCRS to
-// targetCRS and optional area.
-func (c *Context) NewCRSToCRSTransformation(sourceCRS, targetCRS string, area *Area) (*Transformation, error) {
-	c.Lock()
-	defer c.Unlock()
-
-	cSourceCRS := C.CString(sourceCRS)
-	defer C.free(unsafe.Pointer(cSourceCRS))
-
-	cTargetCRS := C.CString(targetCRS)
-	defer C.free(unsafe.Pointer(cTargetCRS))
-
-	var cArea *C.PJ_AREA
-	if area != nil {
-		cArea = area.pjArea
-	}
-
-	return c.newTransformation(C.proj_create_crs_to_crs(c.pjContext, cSourceCRS, cTargetCRS, cArea))
-}
-
-// NewTransformation returns a new transformation with the give definition.
-func (c *Context) NewTransformation(definition string) (*Transformation, error) {
-	c.Lock()
-	defer c.Unlock()
-
-	cDefinition := C.CString(definition)
-	defer C.free(unsafe.Pointer(cDefinition))
-
-	return c.newTransformation(C.proj_create(c.pjContext, cDefinition))
 }
 
 // Destroy releases all resources associated with t.
