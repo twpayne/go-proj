@@ -3,7 +3,7 @@ package proj_test
 import (
 	"fmt"
 
-	"github.com/twpayne/go-proj/v9"
+	"github.com/twpayne/go-proj/v10"
 )
 
 func ExamplePJ_Forward() {
