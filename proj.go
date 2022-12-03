@@ -86,14 +86,14 @@ func (c *Context) Destroy() {
 	}
 }
 
-// ErrnoString returns the text representation of errno.
+// errnoString returns the text representation of errno.
 func (c *Context) errnoString(errno int) string {
 	c.Lock()
 	defer c.Unlock()
 	return C.GoString(C.proj_context_errno_string(c.pjContext, (C.int)(errno)))
 }
 
-// NewError returns a new error with number errno.
+// newError returns a new error with number errno.
 func (c *Context) newError(errno int) *Error {
 	return &Error{
 		context: c,
