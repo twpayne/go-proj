@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/exp/slices"
 
-	"github.com/twpayne/go-proj/v9"
+	"github.com/twpayne/go-proj/v10"
 )
 
 var (

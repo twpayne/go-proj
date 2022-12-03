@@ -1,6 +1,6 @@
 # go-proj
 
-[![GoDoc](https://godoc.org/github.com/twpayne/go-proj/v9?status.svg)](https://godoc.org/github.com/twpayne/go-proj/v9)
+[![GoDoc](https://godoc.org/github.com/twpayne/go-proj/v10?status.svg)](https://godoc.org/github.com/twpayne/go-proj/v10)
 
 Package go-proj provides an interface to [PROJ](https://proj.org).
 

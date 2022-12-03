@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/twpayne/go-proj/v9"
+	"github.com/twpayne/go-proj/v10"
 )
 
 func TestContext_NewCRSToCRS(t *testing.T) {

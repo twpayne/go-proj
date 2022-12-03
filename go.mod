@@ -1,4 +1,4 @@
-module github.com/twpayne/go-proj/v9
+module github.com/twpayne/go-proj/v10
 
 go 1.19
 
