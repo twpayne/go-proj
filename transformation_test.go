@@ -22,6 +22,24 @@ var (
 	parisEPSG4326   = proj.Coord{48.856613, 2.352222, 78, 0}
 )
 
+func TestTransformation_Info(t *testing.T) {
+	defer runtime.GC()
+
+	context := proj.NewContext()
+	require.NotNil(t, context)
+
+	transformation, err := context.NewTransformation("epsg:2056")
+	require.NoError(t, err)
+	require.NotNil(t, transformation)
+
+	expectedInfo := proj.ProjInfo{
+		Description: "CH1903+ / LV95",
+		Accuracy:    -1,
+	}
+	actualInfo := transformation.Info()
+	assert.Equal(t, expectedInfo, actualInfo)
+}
+
 func TestTransformation_Trans(t *testing.T) {
 	for _, tc := range []struct {
 		name        string
