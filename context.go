@@ -39,9 +39,8 @@ func (c *Context) Destroy() {
 	}
 }
 
-// NewCRSToCRSTransformation returns a new Transformation from sourceCRS to
-// targetCRS and optional area.
-func (c *Context) NewCRSToCRSTransformation(sourceCRS, targetCRS string, area *Area) (*Transformation, error) {
+// NewCRSToCRS returns a new PJ from sourceCRS to targetCRS and optional area.
+func (c *Context) NewCRSToCRS(sourceCRS, targetCRS string, area *Area) (*PJ, error) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -56,22 +55,22 @@ func (c *Context) NewCRSToCRSTransformation(sourceCRS, targetCRS string, area *A
 		cArea = area.pjArea
 	}
 
-	return c.newTransformation(C.proj_create_crs_to_crs(c.pjContext, cSourceCRS, cTargetCRS, cArea))
+	return c.newPJ(C.proj_create_crs_to_crs(c.pjContext, cSourceCRS, cTargetCRS, cArea))
 }
 
-// NewTransformation returns a new transformation with the give definition.
-func (c *Context) NewTransformation(definition string) (*Transformation, error) {
+// New returns a new PJ with the given definition.
+func (c *Context) New(definition string) (*PJ, error) {
 	c.Lock()
 	defer c.Unlock()
 
 	cDefinition := C.CString(definition)
 	defer C.free(unsafe.Pointer(cDefinition))
 
-	return c.newTransformation(C.proj_create(c.pjContext, cDefinition))
+	return c.newPJ(C.proj_create(c.pjContext, cDefinition))
 }
 
-// NewTransformationFromArgs returns a new transformation from args.
-func (c *Context) NewTransformationFromArgs(args ...string) (*Transformation, error) {
+// NewFromArgs returns a new PJ from args.
+func (c *Context) NewFromArgs(args ...string) (*PJ, error) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -82,7 +81,7 @@ func (c *Context) NewTransformationFromArgs(args ...string) (*Transformation, er
 		cArgs = append(cArgs, cArg)
 	}
 
-	return c.newTransformation(C.proj_create_argv(c.pjContext, (C.int)(len(cArgs)), (**C.char)(unsafe.Pointer(&cArgs[0]))))
+	return c.newPJ(C.proj_create_argv(c.pjContext, (C.int)(len(cArgs)), (**C.char)(unsafe.Pointer(&cArgs[0]))))
 }
 
 // errnoString returns the text representation of errno.
@@ -100,22 +99,21 @@ func (c *Context) newError(errno int) *Error {
 	}
 }
 
-// newTransformation returns a new *Transformation or an error.
-func (c *Context) newTransformation(pj *C.PJ) (*Transformation, error) {
-	if pj == nil {
+// newPJ returns a new PJ or an error.
+func (c *Context) newPJ(cPJ *C.PJ) (*PJ, error) {
+	if cPJ == nil {
 		return nil, c.newError(int(C.proj_context_errno(c.pjContext)))
 	}
 
-	transformation := &Transformation{
+	pj := &PJ{
 		context: c,
-		pj:      pj,
+		pj:      cPJ,
 	}
-	runtime.SetFinalizer(transformation, (*Transformation).Destroy)
-	return transformation, nil
+	runtime.SetFinalizer(pj, (*PJ).Destroy)
+	return pj, nil
 }
 
-// NewCRSToCRSTransformation returns a new Transformation from sourceCRS to
-// targetCRS and optional area.
-func NewCRSToCRSTransformation(sourceCRS, targetCRS string, area *Area) (*Transformation, error) {
-	return defaultContext.NewCRSToCRSTransformation(sourceCRS, targetCRS, area)
+// NewCRSToCRS returns a new PJ from sourceCRS to targetCRS and optional area.
+func NewCRSToCRS(sourceCRS, targetCRS string, area *Area) (*PJ, error) {
+	return defaultContext.NewCRSToCRS(sourceCRS, targetCRS, area)
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/twpayne/go-proj/v9"
 )
 
-func TestContext_NewCRSToCRSTransformation(t *testing.T) {
+func TestContext_NewCRSToCRS(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
@@ -40,19 +40,19 @@ func TestContext_NewCRSToCRSTransformation(t *testing.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			transformation, err := context.NewCRSToCRSTransformation(tc.sourceCRS, tc.targetCRS, nil)
+			pj, err := context.NewCRSToCRS(tc.sourceCRS, tc.targetCRS, nil)
 			if tc.expectedErr != nil {
 				assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
-				assert.Nil(t, transformation)
+				assert.Nil(t, pj)
 			} else {
 				assert.NoError(t, err)
-				assert.NotNil(t, transformation)
+				assert.NotNil(t, pj)
 			}
 		})
 	}
 }
 
-func TestContext_NewTransformation(t *testing.T) {
+func TestContext_New(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
@@ -78,19 +78,19 @@ func TestContext_NewTransformation(t *testing.T) {
 		},
 	} {
 		t.Run(tc.definition, func(t *testing.T) {
-			transformation, err := context.NewTransformation(tc.definition)
+			pj, err := context.New(tc.definition)
 			if tc.expectedErr != nil {
 				assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
-				assert.Nil(t, transformation)
+				assert.Nil(t, pj)
 			} else {
 				assert.NoError(t, err)
-				assert.NotNil(t, transformation)
+				assert.NotNil(t, pj)
 			}
 		})
 	}
 }
 
-func TestContext_NewTransformationFromArgs(t *testing.T) {
+func TestContext_NewFromArgs(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
@@ -113,13 +113,13 @@ func TestContext_NewTransformationFromArgs(t *testing.T) {
 		},
 	} {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			transformation, err := context.NewTransformationFromArgs(tc.args...)
+			pj, err := context.NewFromArgs(tc.args...)
 			if tc.expectedErr != nil {
 				assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
-				assert.Nil(t, transformation)
+				assert.Nil(t, pj)
 			} else {
 				assert.NoError(t, err)
-				assert.NotNil(t, transformation)
+				assert.NotNil(t, pj)
 			}
 		})
 	}
