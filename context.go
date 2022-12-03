@@ -70,6 +70,21 @@ func (c *Context) NewTransformation(definition string) (*Transformation, error) 
 	return c.newTransformation(C.proj_create(c.pjContext, cDefinition))
 }
 
+// NewTransformationFromArgs returns a new transformation from args.
+func (c *Context) NewTransformationFromArgs(args ...string) (*Transformation, error) {
+	c.Lock()
+	defer c.Unlock()
+
+	cArgs := make([]*C.char, 0, len(args))
+	for _, arg := range args {
+		cArg := C.CString(arg)
+		defer C.free(unsafe.Pointer(cArg))
+		cArgs = append(cArgs, cArg)
+	}
+
+	return c.newTransformation(C.proj_create_argv(c.pjContext, (C.int)(len(cArgs)), (**C.char)(unsafe.Pointer(&cArgs[0]))))
+}
+
 // errnoString returns the text representation of errno.
 func (c *Context) errnoString(errno int) string {
 	c.Lock()

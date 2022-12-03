@@ -2,6 +2,7 @@ package proj_test
 
 import (
 	"runtime"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -78,6 +79,41 @@ func TestContext_NewTransformation(t *testing.T) {
 	} {
 		t.Run(tc.definition, func(t *testing.T) {
 			transformation, err := context.NewTransformation(tc.definition)
+			if tc.expectedErr != nil {
+				assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
+				assert.Nil(t, transformation)
+			} else {
+				assert.NoError(t, err)
+				assert.NotNil(t, transformation)
+			}
+		})
+	}
+}
+
+func TestContext_NewTransformationFromArgs(t *testing.T) {
+	defer runtime.GC()
+
+	context := proj.NewContext()
+	require.NotNil(t, context)
+
+	for i, tc := range []struct {
+		args        []string
+		expectedErr map[int]string
+	}{
+		{
+			args: []string{"proj=utm", "zone=32", "ellps=GRS80"},
+		},
+		{
+			args: []string{"proj=utm", "zone=0", "ellps=GRS80"},
+			expectedErr: map[int]string{
+				6: "invalid UTM zone number",
+				8: "Invalid value for an argument",
+				9: "Invalid value for an argument",
+			},
+		},
+	} {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			transformation, err := context.NewTransformationFromArgs(tc.args...)
 			if tc.expectedErr != nil {
 				assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
 				assert.Nil(t, transformation)
