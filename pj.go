@@ -69,6 +69,7 @@ func (p *PJ) GetLastUsedOperation() (*PJ, error) {
 	return p.context.newPJ(C.proj_trans_get_last_used_operation(p.pj))
 }
 
+// Info returns information about p.
 func (p *PJ) Info() PJInfo {
 	p.context.Lock()
 	defer p.context.Unlock()
