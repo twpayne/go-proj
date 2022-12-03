@@ -22,7 +22,7 @@ var (
 	parisEPSG4326   = proj.Coord{48.856613, 2.352222, 78, 0}
 )
 
-func TestContextNewCRSToCRSTransformation(t *testing.T) {
+func TestContext_NewCRSToCRSTransformation(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
@@ -63,7 +63,7 @@ func TestContextNewCRSToCRSTransformation(t *testing.T) {
 	}
 }
 
-func TestTransformationTrans(t *testing.T) {
+func TestTransformation_Trans(t *testing.T) {
 	for _, tc := range []struct {
 		name        string
 		sourceCRS   string
@@ -151,7 +151,45 @@ func TestTransformationTrans(t *testing.T) {
 	}
 }
 
-func TestTransformationTransArray(t *testing.T) {
+func TestTransformation_Trans_error(t *testing.T) {
+	defer runtime.GC()
+
+	context := proj.NewContext()
+	require.NotNil(t, context)
+
+	transformation, err := context.NewCRSToCRSTransformation("EPSG:4326", "EPSG:3857", nil)
+	require.NoError(t, err)
+	require.NotNil(t, transformation)
+
+	for _, tc := range []struct {
+		name        string
+		direction   proj.Direction
+		coord       proj.Coord
+		expectedErr map[int]string
+	}{
+		{
+			name:      "invalid_coordinate",
+			direction: proj.DirectionFwd,
+			coord:     proj.Coord{91, 0, 0, 0},
+			expectedErr: map[int]string{
+				6: "latitude or longitude exceeded limits",
+				8: "Invalid coordinate",
+				9: "Invalid coordinate",
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			actualCoord, err := transformation.Trans(tc.direction, tc.coord)
+			assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
+			assert.Equal(t, proj.Coord{}, actualCoord)
+
+			_, err = transformation.Trans(tc.direction, proj.Coord{})
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestTransformation_TransArray(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
@@ -208,7 +246,7 @@ func TestTransformationTransArray(t *testing.T) {
 	}
 }
 
-func TestTransformationTransBounds(t *testing.T) {
+func TestTransformation_TransBounds(t *testing.T) {
 	if proj.VersionMajor < 8 || proj.VersionMajor == 8 && proj.VersionMinor < 2 {
 		t.Skip()
 	}
@@ -265,45 +303,7 @@ func TestTransformationTransBounds(t *testing.T) {
 	}
 }
 
-func TestTransformationTransError(t *testing.T) {
-	defer runtime.GC()
-
-	context := proj.NewContext()
-	require.NotNil(t, context)
-
-	transformation, err := context.NewCRSToCRSTransformation("EPSG:4326", "EPSG:3857", nil)
-	require.NoError(t, err)
-	require.NotNil(t, transformation)
-
-	for _, tc := range []struct {
-		name        string
-		direction   proj.Direction
-		coord       proj.Coord
-		expectedErr map[int]string
-	}{
-		{
-			name:      "invalid_coordinate",
-			direction: proj.DirectionFwd,
-			coord:     proj.Coord{91, 0, 0, 0},
-			expectedErr: map[int]string{
-				6: "latitude or longitude exceeded limits",
-				8: "Invalid coordinate",
-				9: "Invalid coordinate",
-			},
-		},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			actualCoord, err := transformation.Trans(tc.direction, tc.coord)
-			assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
-			assert.Equal(t, proj.Coord{}, actualCoord)
-
-			_, err = transformation.Trans(tc.direction, proj.Coord{})
-			require.NoError(t, err)
-		})
-	}
-}
-
-func TestTransformationTransFlatCoords(t *testing.T) {
+func TestTransformation_TransFlatCoords(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
