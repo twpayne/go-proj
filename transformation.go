@@ -53,6 +53,12 @@ func (t *Transformation) ForwardFlatCoords(flatCoords []float64, stride, zIndex,
 	return t.TransFlatCoords(DirectionFwd, flatCoords, stride, zIndex, mIndex)
 }
 
+func (t *Transformation) GetLastUsedOperation() (*Transformation, error) {
+	t.context.Lock()
+	defer t.context.Unlock()
+	return t.context.newTransformation(C.proj_trans_get_last_used_operation(t.pj))
+}
+
 // Inverse transforms coord in the inverse direction.
 func (t *Transformation) Inverse(coord Coord) (Coord, error) {
 	return t.Trans(DirectionInv, coord)

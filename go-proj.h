@@ -15,4 +15,9 @@ int proj_trans_bounds(PJ_CONTEXT *context, PJ *P, PJ_DIRECTION direction,
                       double *out_ymax, int densify_pts);
 #endif
 
+#if PROJ_VERSION_MAJOR < 9 ||                                                  \
+    (PROJ_VERSION_MAJOR == 9 && PROJ_VERSION_MINOR < 1)
+PJ *proj_trans_get_last_used_operation(PJ *P);
+#endif
+
 #endif
