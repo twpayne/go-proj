@@ -5,7 +5,6 @@ package proj
 import "C"
 
 import (
-	"runtime"
 	"unsafe"
 )
 
@@ -48,17 +47,18 @@ func (c *Context) NewCRSToCRSTransformation(sourceCRS, targetCRS string, area *A
 		cArea = area.pjArea
 	}
 
-	pj := C.proj_create_crs_to_crs(c.pjContext, cSourceCRS, cTargetCRS, cArea)
-	if pj == nil {
-		return nil, c.newError(int(C.proj_context_errno(c.pjContext)))
-	}
+	return c.newTransformation(C.proj_create_crs_to_crs(c.pjContext, cSourceCRS, cTargetCRS, cArea))
+}
 
-	transformation := &Transformation{
-		context: c,
-		pj:      pj,
-	}
-	runtime.SetFinalizer(transformation, (*Transformation).Destroy)
-	return transformation, nil
+// NewTransformation returns a new transformation with the give definition.
+func (c *Context) NewTransformation(definition string) (*Transformation, error) {
+	c.Lock()
+	defer c.Unlock()
+
+	cDefinition := C.CString(definition)
+	defer C.free(unsafe.Pointer(cDefinition))
+
+	return c.newTransformation(C.proj_create(c.pjContext, cDefinition))
 }
 
 // Destroy releases all resources associated with t.
