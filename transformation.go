@@ -23,6 +23,15 @@ type Transformation struct {
 	pj      *C.PJ
 }
 
+// A ProjInfo contains information about a Proj.
+type ProjInfo struct {
+	ID          string
+	Description string
+	Definition  string
+	HasInverse  bool
+	Accuracy    float64
+}
+
 // Destroy releases all resources associated with t.
 func (t *Transformation) Destroy() {
 	t.context.Lock()
@@ -57,6 +66,20 @@ func (t *Transformation) GetLastUsedOperation() (*Transformation, error) {
 	t.context.Lock()
 	defer t.context.Unlock()
 	return t.context.newTransformation(C.proj_trans_get_last_used_operation(t.pj))
+}
+
+func (t *Transformation) Info() ProjInfo {
+	t.context.Lock()
+	defer t.context.Unlock()
+
+	cProjInfo := C.proj_pj_info(t.pj)
+	return ProjInfo{
+		ID:          C.GoString(cProjInfo.id),
+		Description: C.GoString(cProjInfo.description),
+		Definition:  C.GoString(cProjInfo.definition),
+		HasInverse:  cProjInfo.has_inverse != 0,
+		Accuracy:    (float64)(cProjInfo.accuracy),
+	}
 }
 
 // Inverse transforms coord in the inverse direction.
