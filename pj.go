@@ -104,6 +104,21 @@ func (p *PJ) InverseFlatCoords(flatCoords []float64, stride, zIndex, mIndex int)
 	return p.TransFlatCoords(DirectionInv, flatCoords, stride, zIndex, mIndex)
 }
 
+// LPDist returns the geodesic distance between a and b in geodetic coordinates.
+func (p *PJ) LPDist(a, b Coord) float64 {
+	p.context.Lock()
+	defer p.context.Unlock()
+	return (float64)(C.proj_lp_dist(p.pj, *(*C.PJ_COORD)(unsafe.Pointer(&a)), *(*C.PJ_COORD)(unsafe.Pointer(&b))))
+}
+
+// LPZDist returns the geodesic distance between a and b in geodetic
+// coordinates, taking height above the ellipsoid into account.q
+func (p *PJ) LPZDist(a, b Coord) float64 {
+	p.context.Lock()
+	defer p.context.Unlock()
+	return (float64)(C.proj_lpz_dist(p.pj, *(*C.PJ_COORD)(unsafe.Pointer(&a)), *(*C.PJ_COORD)(unsafe.Pointer(&b))))
+}
+
 // Trans transforms a single Coord.
 func (p *PJ) Trans(direction Direction, coord Coord) (Coord, error) {
 	p.context.Lock()

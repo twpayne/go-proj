@@ -1,7 +1,9 @@
 package proj_test
 
 import (
+	"math"
 	"runtime"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -38,6 +40,50 @@ func TestPJ_Info(t *testing.T) {
 	}
 	actualInfo := pj.Info()
 	assert.Equal(t, expectedInfo, actualInfo)
+}
+
+func TestPJ_LPDist(t *testing.T) {
+	defer runtime.GC()
+
+	context := proj.NewContext()
+	require.NotNil(t, context)
+
+	for i, tc := range []struct {
+		definition      string
+		a               proj.Coord
+		b               proj.Coord
+		expectedLPDist  float64
+		expectedLPZDist float64
+		delta           float64
+	}{
+		{
+			definition:      "epsg:4326",
+			a:               bernEPSG4326.DegToRad(),
+			b:               zurichEPSG4326.DegToRad(),
+			expectedLPDist:  129762.08359988699,
+			expectedLPZDist: 129762.15073812571,
+			delta:           math.SmallestNonzeroFloat64,
+		},
+		{
+			definition:      "epsg:4326",
+			a:               newYorkEPSG4326.DegToRad(),
+			b:               parisEPSG4326.DegToRad(),
+			expectedLPDist:  8494402.471778858,
+			expectedLPZDist: 8494402.472051037,
+			delta:           math.SmallestNonzeroFloat64,
+		},
+	} {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			pj, err := context.New(tc.definition)
+			require.NoError(t, err)
+			require.NotNil(t, pj)
+
+			assert.InDelta(t, tc.expectedLPDist, pj.LPDist(tc.a, tc.b), tc.delta)
+			assert.InDelta(t, tc.expectedLPDist, pj.LPDist(tc.b, tc.a), tc.delta)
+			assert.InDelta(t, tc.expectedLPZDist, pj.LPZDist(tc.a, tc.b), tc.delta)
+			assert.InDelta(t, tc.expectedLPZDist, pj.LPZDist(tc.b, tc.a), tc.delta)
+		})
+	}
 }
 
 func TestPJ_Trans(t *testing.T) {
