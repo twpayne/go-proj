@@ -14,7 +14,7 @@ var defaultContext = &Context{}
 
 // A Context is a context.
 type Context struct {
-	sync.Mutex
+	mutex     sync.Mutex
 	pjContext *C.PJ_CONTEXT
 }
 
@@ -37,6 +37,10 @@ func (c *Context) Destroy() {
 		C.proj_context_destroy(c.pjContext)
 		c.pjContext = nil
 	}
+}
+
+func (c *Context) Lock() {
+	c.mutex.Lock()
 }
 
 // NewCRSToCRS returns a new PJ from sourceCRS to targetCRS and optional area.
@@ -82,6 +86,10 @@ func (c *Context) NewFromArgs(args ...string) (*PJ, error) {
 	}
 
 	return c.newPJ(C.proj_create_argv(c.pjContext, (C.int)(len(cArgs)), (**C.char)(unsafe.Pointer(&cArgs[0]))))
+}
+
+func (c *Context) Unlock() {
+	c.mutex.Unlock()
 }
 
 // errnoString returns the text representation of errno.
