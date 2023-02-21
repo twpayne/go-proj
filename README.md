@@ -1,6 +1,6 @@
 # go-proj
 
-[![GoDoc](https://godoc.org/github.com/twpayne/go-proj/v10?status.svg)](https://godoc.org/github.com/twpayne/go-proj/v10)
+[![GoDoc](https://pkg.go.dev/badge/github.com/twpayne/go-proj/v10)](https://pkg.go.dev/github.com/twpayne/go-proj/v10)
 
 Package go-proj provides an interface to [PROJ](https://proj.org).
 
@@ -12,6 +12,12 @@ Package go-proj provides an interface to [PROJ](https://proj.org).
 * Compatible with all geometry libraries.
 * Automatically handles C memory management.
 * Well tested.
+
+## Install
+
+```console
+$ go get github.com/twpayne/go-proj/v10
+```
 
 ## Example
 
@@ -44,16 +50,18 @@ There are many existing bindings for PROJ. Generally speaking, these:
 
 * Do not handle errors during transformation.
 
+* Are no longer maintained.
+
 These existing bindings include:
 
-* [`github.com/everystreet/go-proj`](https://github.com/everystreet/go-proj).
+* [`github.com/everystreet/go-proj`](https://github.com/everystreet/go-proj),
+  latest commit December 11, 2021.
 
 * [`github.com/go-spatial/proj`](https://github.com/go-spatial/proj) is an
   incomplete rewrite of PROJ4 in Go with the last commit on October 25, 2019.
 
-* [`github.com/nextgis/go-proj`](https://github.com/nextgis/go-proj).
-
-* [`github.com/omniscale/go-proj`](https://github.com/omniscale/go-proj).
+* [`github.com/omniscale/go-proj`](https://github.com/omniscale/go-proj) has
+  limited functionality.
 
 * [`github.com/pebbe/go-proj-4`](https://github.com/pebbe/go-proj-4) has limited
   functionality with the last commit on February 20, 2021.
@@ -65,4 +73,3 @@ These existing bindings include:
 ## License
 
 MIT
-
