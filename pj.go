@@ -93,6 +93,11 @@ func (p *PJ) Info() PJInfo {
 	}
 }
 
+// IsCRS returns whether p is a CRS.
+func (p *PJ) IsCRS() bool {
+	return C.proj_is_crs(p.pj) != 0
+}
+
 // Inverse transforms coord in the inverse direction.
 func (p *PJ) Inverse(coord Coord) (Coord, error) {
 	return p.Trans(DirectionInv, coord)
