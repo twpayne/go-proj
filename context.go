@@ -62,6 +62,36 @@ func (c *Context) NewCRSToCRS(sourceCRS, targetCRS string, area *Area) (*PJ, err
 	return c.newPJ(C.proj_create_crs_to_crs(c.pjContext, cSourceCRS, cTargetCRS, cArea))
 }
 
+// NewCRSToCRSFromPJ returns a new PJ from two CRSs.
+func (c *Context) NewCRSToCRSFromPJ(sourcePJ, targetPJ *PJ, area *Area, options string) (*PJ, error) {
+	c.Lock()
+	defer c.Unlock()
+
+	if sourcePJ.context != c {
+		sourcePJ.context.Lock()
+		defer sourcePJ.context.Unlock()
+	}
+
+	if targetPJ.context != c && targetPJ.context != sourcePJ.context {
+		targetPJ.context.Lock()
+		defer targetPJ.context.Unlock()
+	}
+
+	var cOptionsPtr **C.char
+	if options != "" {
+		cOptions := C.CString(options)
+		defer C.free(unsafe.Pointer(cOptions))
+		cOptionsPtr = &cOptions
+	}
+
+	var cArea *C.PJ_AREA
+	if area != nil {
+		cArea = area.pjArea
+	}
+
+	return c.newPJ(C.proj_create_crs_to_crs_from_pj(c.pjContext, sourcePJ.pj, targetPJ.pj, cArea, cOptionsPtr))
+}
+
 // New returns a new PJ with the given definition.
 func (c *Context) New(definition string) (*PJ, error) {
 	c.Lock()
@@ -121,7 +151,22 @@ func (c *Context) newPJ(cPJ *C.PJ) (*PJ, error) {
 	return pj, nil
 }
 
+// New returns a PJ with the given definition.
+func New(definition string) (*PJ, error) {
+	return defaultContext.New(definition)
+}
+
+// NewFromArgs returns a PJ with the given args.
+func NewFromArgs(args ...string) (*PJ, error) {
+	return defaultContext.NewFromArgs(args...)
+}
+
 // NewCRSToCRS returns a new PJ from sourceCRS to targetCRS and optional area.
 func NewCRSToCRS(sourceCRS, targetCRS string, area *Area) (*PJ, error) {
 	return defaultContext.NewCRSToCRS(sourceCRS, targetCRS, area)
+}
+
+// NewCRSToCRSFromPJ returns a new PJ from two CRSs.
+func NewCRSToCRSFromPJ(sourcePJ, targetPJ *PJ, area *Area, options string) (*PJ, error) {
+	return defaultContext.NewCRSToCRSFromPJ(sourcePJ, targetPJ, area, options)
 }

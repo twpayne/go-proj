@@ -52,6 +52,20 @@ func TestContext_NewCRSToCRS(t *testing.T) {
 	}
 }
 
+func TestContext_NewCRSToCRSFromPJ(t *testing.T) {
+	defer runtime.GC()
+
+	sourceCRS, err := proj.New("epsg:4326")
+	require.NoError(t, err)
+
+	targetCRS, err := proj.New("epsg:3857")
+	require.NoError(t, err)
+
+	pj, err := proj.NewCRSToCRSFromPJ(sourceCRS, targetCRS, nil, "")
+	require.NoError(t, err)
+	assert.NotNil(t, pj)
+}
+
 func TestContext_New(t *testing.T) {
 	defer runtime.GC()
 
