@@ -57,9 +57,11 @@ func TestContext_NewCRSToCRSFromPJ(t *testing.T) {
 
 	sourceCRS, err := proj.New("epsg:4326")
 	require.NoError(t, err)
+	assert.True(t, sourceCRS.IsCRS())
 
 	targetCRS, err := proj.New("epsg:3857")
 	require.NoError(t, err)
+	assert.True(t, targetCRS.IsCRS())
 
 	pj, err := proj.NewCRSToCRSFromPJ(sourceCRS, targetCRS, nil, "")
 	require.NoError(t, err)
