@@ -42,6 +42,17 @@ func (p *PJ) Destroy() {
 	}
 }
 
+// Returns a new PJ instance whose axis order is the one expected for visualization
+// purposes. If the axis order of its source or target CRS is northing,easting, then
+// an axis swap operation will be inserted.
+// The axis order of geographic CRS will be longitude, latitude [,height], and the
+// one of projected CRS will be easting, northing [, height]
+func (p *PJ) NormalizeForVisualization() (*PJ, error) {
+	p.context.Lock()
+	defer p.context.Unlock()
+	return p.context.newPJ(C.proj_normalize_for_visualization(p.context.pjContext, p.pj))
+}
+
 // Forward transforms coord in the forward direction.
 func (p *PJ) Forward(coord Coord) (Coord, error) {
 	return p.Trans(DirectionFwd, coord)
