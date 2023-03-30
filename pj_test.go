@@ -22,6 +22,8 @@ var (
 	newYorkEPSG4326 = proj.Coord{40.712778, -74.006111, 10, 0}
 	parisEPSG3857   = proj.Coord{261848.15527273554, 6250566.54904563, 78, 0}
 	parisEPSG4326   = proj.Coord{48.856613, 2.352222, 78, 0}
+	gdanskEPSG4326  = proj.Coord{54.371652, 18.612462, 11.1, 0}
+	gdanskEPSG2180  = proj.Coord{723134.1266446244, 474831.4869142064, 11.1, 0}
 )
 
 func TestPJ_Info(t *testing.T) {
@@ -440,4 +442,62 @@ func TestPJ_TransFlatCoords(t *testing.T) {
 			assert.InDeltaSlice(t, tc.sourceFlatCoords, actualSourceFlatCoords, 1e-9)
 		})
 	}
+}
+
+func TestPJ_NormalizeForVisualizationForNorthingEastingCRS(t *testing.T) {
+	defer runtime.GC()
+
+	context := proj.NewContext()
+	require.NotNil(t, context)
+
+	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:2180", nil)
+	require.NoError(t, err)
+	require.NotNil(t, pj)
+
+	t.Run("original axis order", func(t *testing.T) {
+		actualCoord, err := pj.Forward(gdanskEPSG4326)
+		// Original axis order. X is northing, Y is easting.
+		require.NoError(t, err)
+		assert.InDeltaSlice(t, gdanskEPSG2180[:], actualCoord[:], 1e-7)
+	})
+
+	t.Run("normalized axis order", func(t *testing.T) {
+		// Create a new PJ with the axis swap operation.
+		pj, err = pj.NormalizeForVisualization()
+		require.NoError(t, err)
+
+		// The axis order of geographic CRS is now longitude, latitude.
+		swappedGdanskEPSG4326 := proj.Coord{gdanskEPSG4326[1], gdanskEPSG4326[0], gdanskEPSG4326[2], gdanskEPSG4326[3]}
+
+		actualCoord, err := pj.Forward(swappedGdanskEPSG4326)
+
+		// Normalized axis order. X is easting, Y is northing.
+		swappedGdanskEPSG2180 := proj.Coord{gdanskEPSG2180[1], gdanskEPSG2180[0], gdanskEPSG2180[2], gdanskEPSG2180[3]}
+		require.NoError(t, err)
+		assert.InDeltaSlice(t, swappedGdanskEPSG2180[:], actualCoord[:], 1e-7)
+	})
+}
+
+func TestPJ_NormalizeForVisualizationForEastingNorthingCRS(t *testing.T) {
+	defer runtime.GC()
+
+	context := proj.NewContext()
+	require.NotNil(t, context)
+
+	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:3857", nil)
+	require.NoError(t, err)
+	require.NotNil(t, pj)
+
+	// Create a new PJ with the axis swap operation.
+	pj, err = pj.NormalizeForVisualization()
+	require.NoError(t, err)
+
+	// The axis order of geographic CRS is now longitude, latitude.
+	swappedNewYorkEPSG4326 := proj.Coord{newYorkEPSG4326[1], newYorkEPSG4326[0], newYorkEPSG4326[2], newYorkEPSG4326[3]}
+
+	actualCoord, err := pj.Forward(swappedNewYorkEPSG4326)
+
+	// The output axis order is not changed.
+	require.NoError(t, err)
+	assert.InDeltaSlice(t, newYorkEPSG3857[:], actualCoord[:], 1e-7)
 }
