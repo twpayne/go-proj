@@ -171,7 +171,7 @@ func (p *PJ) TransArray(direction Direction, coords []Coord) error {
 	lastErrno := C.proj_errno_reset(p.pj)
 	defer C.proj_errno_restore(p.pj, lastErrno)
 
-	if errno := int(C.proj_trans_array(p.pj, (C.PJ_DIRECTION)(direction), (C.ulong)(len(coords)), (*C.PJ_COORD)(unsafe.Pointer(&coords[0])))); errno != 0 {
+	if errno := int(C.proj_trans_array(p.pj, (C.PJ_DIRECTION)(direction), (C.size_t)(len(coords)), (*C.PJ_COORD)(unsafe.Pointer(&coords[0])))); errno != 0 {
 		return p.context.newError(errno)
 	}
 	return nil
