@@ -5,8 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"github.com/alecthomas/assert/v2"
 
 	"github.com/twpayne/go-proj/v10"
 )
@@ -15,7 +14,7 @@ func TestContext_NewCRSToCRS(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
-	require.NotNil(t, context)
+	assert.NotZero(t, context)
 
 	for _, tc := range []struct {
 		name        string
@@ -43,10 +42,10 @@ func TestContext_NewCRSToCRS(t *testing.T) {
 			pj, err := context.NewCRSToCRS(tc.sourceCRS, tc.targetCRS, nil)
 			if tc.expectedErr != nil {
 				assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
-				assert.Nil(t, pj)
+				assert.Zero(t, pj)
 			} else {
 				assert.NoError(t, err)
-				assert.NotNil(t, pj)
+				assert.NotZero(t, pj)
 			}
 		})
 	}
@@ -56,23 +55,23 @@ func TestContext_NewCRSToCRSFromPJ(t *testing.T) {
 	defer runtime.GC()
 
 	sourceCRS, err := proj.New("epsg:4326")
-	require.NoError(t, err)
+	assert.NoError(t, err)
 	assert.True(t, sourceCRS.IsCRS())
 
 	targetCRS, err := proj.New("epsg:3857")
-	require.NoError(t, err)
+	assert.NoError(t, err)
 	assert.True(t, targetCRS.IsCRS())
 
 	pj, err := proj.NewCRSToCRSFromPJ(sourceCRS, targetCRS, nil, "")
-	require.NoError(t, err)
-	assert.NotNil(t, pj)
+	assert.NoError(t, err)
+	assert.NotZero(t, pj)
 }
 
 func TestContext_New(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
-	require.NotNil(t, context)
+	assert.NotZero(t, context)
 
 	for _, tc := range []struct {
 		definition  string
@@ -97,10 +96,10 @@ func TestContext_New(t *testing.T) {
 			pj, err := context.New(tc.definition)
 			if tc.expectedErr != nil {
 				assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
-				assert.Nil(t, pj)
+				assert.Zero(t, pj)
 			} else {
 				assert.NoError(t, err)
-				assert.NotNil(t, pj)
+				assert.NotZero(t, pj)
 			}
 		})
 	}
@@ -110,7 +109,7 @@ func TestContext_NewFromArgs(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
-	require.NotNil(t, context)
+	assert.NotZero(t, context)
 
 	for i, tc := range []struct {
 		args        []string
@@ -132,10 +131,10 @@ func TestContext_NewFromArgs(t *testing.T) {
 			pj, err := context.NewFromArgs(tc.args...)
 			if tc.expectedErr != nil {
 				assert.EqualError(t, err, tc.expectedErr[proj.VersionMajor])
-				assert.Nil(t, pj)
+				assert.Zero(t, pj)
 			} else {
 				assert.NoError(t, err)
-				assert.NotNil(t, pj)
+				assert.NotZero(t, pj)
 			}
 		})
 	}

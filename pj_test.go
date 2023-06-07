@@ -6,8 +6,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"github.com/alecthomas/assert/v2"
 	"golang.org/x/exp/slices"
 
 	"github.com/twpayne/go-proj/v10"
@@ -30,11 +29,11 @@ func TestPJ_Info(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
-	require.NotNil(t, context)
+	assert.NotZero(t, context)
 
 	pj, err := context.New("epsg:2056")
-	require.NoError(t, err)
-	require.NotNil(t, pj)
+	assert.NoError(t, err)
+	assert.NotZero(t, pj)
 
 	expectedInfo := proj.PJInfo{
 		Description: "CH1903+ / LV95",
@@ -52,7 +51,7 @@ func TestPJ_LPDist(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
-	require.NotNil(t, context)
+	assert.NotZero(t, context)
 
 	for i, tc := range []struct {
 		definition                 string
@@ -93,23 +92,23 @@ func TestPJ_LPDist(t *testing.T) {
 	} {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			pj, err := context.New(tc.definition)
-			require.NoError(t, err)
-			require.NotNil(t, pj)
+			assert.NoError(t, err)
+			assert.NotZero(t, pj)
 
-			assert.InDelta(t, tc.expectedLPDist, pj.LPDist(tc.a, tc.b), tc.distDelta)
-			assert.InDelta(t, tc.expectedLPDist, pj.LPDist(tc.b, tc.a), tc.distDelta)
-			assert.InDelta(t, tc.expectedLPZDist, pj.LPZDist(tc.a, tc.b), tc.distDelta)
-			assert.InDelta(t, tc.expectedLPZDist, pj.LPZDist(tc.b, tc.a), tc.distDelta)
+			assertInDelta(t, tc.expectedLPDist, pj.LPDist(tc.a, tc.b), tc.distDelta)
+			assertInDelta(t, tc.expectedLPDist, pj.LPDist(tc.b, tc.a), tc.distDelta)
+			assertInDelta(t, tc.expectedLPZDist, pj.LPZDist(tc.a, tc.b), tc.distDelta)
+			assertInDelta(t, tc.expectedLPZDist, pj.LPZDist(tc.b, tc.a), tc.distDelta)
 
 			actualGeodDist, actualGeodForwardAzimuth, actualGeodReverseAzimuth := pj.Geod(tc.a, tc.b)
 			assert.Equal(t, tc.expectedGeodDist, actualGeodDist)
-			assert.InDelta(t, tc.expectedGeodForwardAzimuth, actualGeodForwardAzimuth, tc.azimuthDelta)
-			assert.InDelta(t, tc.expectedGeodReverseAzimuth, actualGeodReverseAzimuth, tc.azimuthDelta)
+			assertInDelta(t, tc.expectedGeodForwardAzimuth, actualGeodForwardAzimuth, tc.azimuthDelta)
+			assertInDelta(t, tc.expectedGeodReverseAzimuth, actualGeodReverseAzimuth, tc.azimuthDelta)
 
 			actualReverseGeodDist, actualReverseGeodForwardAzimuth, actualReverseGeodReverseAzimuth := pj.Geod(tc.b, tc.a)
 			assert.Equal(t, tc.expectedGeodDist, actualReverseGeodDist)
-			assert.InDelta(t, tc.expectedGeodForwardAzimuth, 180+actualReverseGeodReverseAzimuth, tc.azimuthDelta)
-			assert.InDelta(t, tc.expectedGeodReverseAzimuth, 180+actualReverseGeodForwardAzimuth, tc.azimuthDelta)
+			assertInDelta(t, tc.expectedGeodForwardAzimuth, 180+actualReverseGeodReverseAzimuth, tc.azimuthDelta)
+			assertInDelta(t, tc.expectedGeodReverseAzimuth, 180+actualReverseGeodForwardAzimuth, tc.azimuthDelta)
 		})
 	}
 }
@@ -185,19 +184,19 @@ func TestPJ_Trans(t *testing.T) {
 			defer runtime.GC()
 
 			context := proj.NewContext()
-			require.NotNil(t, context)
+			assert.NotZero(t, context)
 
 			pj, err := context.NewCRSToCRS(tc.sourceCRS, tc.targetCRS, tc.area)
-			require.NoError(t, err)
-			require.NotNil(t, pj)
+			assert.NoError(t, err)
+			assert.NotZero(t, pj)
 
 			actualTargetCoord, err := pj.Forward(tc.sourceCoord)
-			require.NoError(t, err)
-			assert.InDeltaSlice(t, tc.targetCoord[:], actualTargetCoord[:], tc.targetDelta)
+			assert.NoError(t, err)
+			assertInDeltaSlice(t, tc.targetCoord[:], actualTargetCoord[:], tc.targetDelta)
 
 			actualSourceCoord, err := pj.Inverse(tc.targetCoord)
-			require.NoError(t, err)
-			assert.InDeltaSlice(t, tc.sourceCoord[:], actualSourceCoord[:], tc.sourceDelta)
+			assert.NoError(t, err)
+			assertInDeltaSlice(t, tc.sourceCoord[:], actualSourceCoord[:], tc.sourceDelta)
 		})
 	}
 }
@@ -206,11 +205,11 @@ func TestPJ_Trans_error(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
-	require.NotNil(t, context)
+	assert.NotZero(t, context)
 
 	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:3857", nil)
-	require.NoError(t, err)
-	require.NotNil(t, pj)
+	assert.NoError(t, err)
+	assert.NotZero(t, pj)
 
 	for _, tc := range []struct {
 		name        string
@@ -235,7 +234,7 @@ func TestPJ_Trans_error(t *testing.T) {
 			assert.Equal(t, proj.Coord{}, actualCoord)
 
 			_, err = pj.Trans(tc.direction, proj.Coord{})
-			require.NoError(t, err)
+			assert.NoError(t, err)
 		})
 	}
 }
@@ -244,11 +243,11 @@ func TestPJ_TransArray(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
-	require.NotNil(t, context)
+	assert.NotZero(t, context)
 
 	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:3857", nil)
-	require.NoError(t, err)
-	require.NotNil(t, pj)
+	assert.NoError(t, err)
+	assert.NotZero(t, pj)
 
 	for _, tc := range []struct {
 		name         string
@@ -280,18 +279,18 @@ func TestPJ_TransArray(t *testing.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			require.Equal(t, len(tc.targetCoords), len(tc.sourceCoords))
+			assert.Equal(t, len(tc.targetCoords), len(tc.sourceCoords))
 
 			actualTargetCoords := slices.Clone(tc.sourceCoords)
-			require.NoError(t, pj.ForwardArray(actualTargetCoords))
+			assert.NoError(t, pj.ForwardArray(actualTargetCoords))
 			for i, actualTargetCoord := range actualTargetCoords {
-				assert.InDeltaSlice(t, tc.targetCoords[i][:], actualTargetCoord[:], 1e1)
+				assertInDeltaSlice(t, tc.targetCoords[i][:], actualTargetCoord[:], 1e1)
 			}
 
 			actualSourceCoords := slices.Clone(tc.targetCoords)
-			require.NoError(t, pj.InverseArray(actualSourceCoords))
+			assert.NoError(t, pj.InverseArray(actualSourceCoords))
 			for i, actualSourceCoord := range actualSourceCoords {
-				assert.InDeltaSlice(t, tc.sourceCoords[i][:], actualSourceCoord[:], 1e-13)
+				assertInDeltaSlice(t, tc.sourceCoords[i][:], actualSourceCoord[:], 1e-13)
 			}
 		})
 	}
@@ -305,11 +304,11 @@ func TestPJ_TransBounds(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
-	require.NotNil(t, context)
+	assert.NotZero(t, context)
 
 	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:2056", nil)
-	require.NoError(t, err)
-	require.NotNil(t, pj)
+	assert.NoError(t, err)
+	assert.NotZero(t, pj)
 
 	for _, tc := range []struct {
 		name         string
@@ -339,17 +338,17 @@ func TestPJ_TransBounds(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			targetBounds, err := pj.ForwardBounds(tc.sourceBounds, 21)
 			assert.NoError(t, err)
-			assert.InDelta(t, tc.targetBounds.XMin, targetBounds.XMin, tc.targetDelta)
-			assert.InDelta(t, tc.targetBounds.YMin, targetBounds.YMin, tc.targetDelta)
-			assert.InDelta(t, tc.targetBounds.XMax, targetBounds.XMax, tc.targetDelta)
-			assert.InDelta(t, tc.targetBounds.YMax, targetBounds.YMax, tc.targetDelta)
+			assertInDelta(t, tc.targetBounds.XMin, targetBounds.XMin, tc.targetDelta)
+			assertInDelta(t, tc.targetBounds.YMin, targetBounds.YMin, tc.targetDelta)
+			assertInDelta(t, tc.targetBounds.XMax, targetBounds.XMax, tc.targetDelta)
+			assertInDelta(t, tc.targetBounds.YMax, targetBounds.YMax, tc.targetDelta)
 
 			sourceBounds, err := pj.InverseBounds(tc.targetBounds, 21)
 			assert.NoError(t, err)
-			assert.InDelta(t, tc.sourceBounds.XMin, sourceBounds.XMin, tc.sourceDelta)
-			assert.InDelta(t, tc.sourceBounds.YMin, sourceBounds.YMin, tc.sourceDelta)
-			assert.InDelta(t, tc.sourceBounds.XMax, sourceBounds.XMax, tc.sourceDelta)
-			assert.InDelta(t, tc.sourceBounds.YMax, sourceBounds.YMax, tc.sourceDelta)
+			assertInDelta(t, tc.sourceBounds.XMin, sourceBounds.XMin, tc.sourceDelta)
+			assertInDelta(t, tc.sourceBounds.YMin, sourceBounds.YMin, tc.sourceDelta)
+			assertInDelta(t, tc.sourceBounds.XMax, sourceBounds.XMax, tc.sourceDelta)
+			assertInDelta(t, tc.sourceBounds.YMax, sourceBounds.YMax, tc.sourceDelta)
 		})
 	}
 }
@@ -358,11 +357,11 @@ func TestPJ_TransFlatCoords(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
-	require.NotNil(t, context)
+	assert.NotZero(t, context)
 
 	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:3857", nil)
-	require.NoError(t, err)
-	require.NotNil(t, pj)
+	assert.NoError(t, err)
+	assert.NotZero(t, pj)
 
 	for _, tc := range []struct {
 		name             string
@@ -434,12 +433,12 @@ func TestPJ_TransFlatCoords(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			actualTargetFlatCoords := slices.Clone(tc.sourceFlatCoords)
-			require.NoError(t, pj.ForwardFlatCoords(actualTargetFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
-			assert.InDeltaSlice(t, tc.targetFlatCoords, actualTargetFlatCoords, 1e1)
+			assert.NoError(t, pj.ForwardFlatCoords(actualTargetFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
+			assertInDeltaSlice(t, tc.targetFlatCoords, actualTargetFlatCoords, 1e1)
 
 			actualSourceFlatCoords := slices.Clone(tc.targetFlatCoords)
-			require.NoError(t, pj.InverseFlatCoords(actualSourceFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
-			assert.InDeltaSlice(t, tc.sourceFlatCoords, actualSourceFlatCoords, 1e-9)
+			assert.NoError(t, pj.InverseFlatCoords(actualSourceFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
+			assertInDeltaSlice(t, tc.sourceFlatCoords, actualSourceFlatCoords, 1e-9)
 		})
 	}
 }
@@ -448,23 +447,23 @@ func TestPJ_NormalizeForVisualizationForNorthingEastingCRS(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
-	require.NotNil(t, context)
+	assert.NotZero(t, context)
 
 	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:2180", nil)
-	require.NoError(t, err)
-	require.NotNil(t, pj)
+	assert.NoError(t, err)
+	assert.NotZero(t, pj)
 
 	t.Run("original axis order", func(t *testing.T) {
 		actualCoord, err := pj.Forward(gdanskEPSG4326)
 		// Original axis order. X is northing, Y is easting.
-		require.NoError(t, err)
-		assert.InDeltaSlice(t, gdanskEPSG2180[:], actualCoord[:], 1e-7)
+		assert.NoError(t, err)
+		assertInDeltaSlice(t, gdanskEPSG2180[:], actualCoord[:], 1e-7)
 	})
 
 	t.Run("normalized axis order", func(t *testing.T) {
 		// Create a new PJ with the axis swap operation.
 		pj, err = pj.NormalizeForVisualization()
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		// The axis order of geographic CRS is now longitude, latitude.
 		swappedGdanskEPSG4326 := proj.Coord{gdanskEPSG4326[1], gdanskEPSG4326[0], gdanskEPSG4326[2], gdanskEPSG4326[3]}
@@ -473,8 +472,8 @@ func TestPJ_NormalizeForVisualizationForNorthingEastingCRS(t *testing.T) {
 
 		// Normalized axis order. X is easting, Y is northing.
 		swappedGdanskEPSG2180 := proj.Coord{gdanskEPSG2180[1], gdanskEPSG2180[0], gdanskEPSG2180[2], gdanskEPSG2180[3]}
-		require.NoError(t, err)
-		assert.InDeltaSlice(t, swappedGdanskEPSG2180[:], actualCoord[:], 1e-7)
+		assert.NoError(t, err)
+		assertInDeltaSlice(t, swappedGdanskEPSG2180[:], actualCoord[:], 1e-7)
 	})
 }
 
@@ -482,15 +481,15 @@ func TestPJ_NormalizeForVisualizationForEastingNorthingCRS(t *testing.T) {
 	defer runtime.GC()
 
 	context := proj.NewContext()
-	require.NotNil(t, context)
+	assert.NotZero(t, context)
 
 	pj, err := context.NewCRSToCRS("EPSG:4326", "EPSG:3857", nil)
-	require.NoError(t, err)
-	require.NotNil(t, pj)
+	assert.NoError(t, err)
+	assert.NotZero(t, pj)
 
 	// Create a new PJ with the axis swap operation.
 	pj, err = pj.NormalizeForVisualization()
-	require.NoError(t, err)
+	assert.NoError(t, err)
 
 	// The axis order of geographic CRS is now longitude, latitude.
 	swappedNewYorkEPSG4326 := proj.Coord{newYorkEPSG4326[1], newYorkEPSG4326[0], newYorkEPSG4326[2], newYorkEPSG4326[3]}
@@ -498,6 +497,24 @@ func TestPJ_NormalizeForVisualizationForEastingNorthingCRS(t *testing.T) {
 	actualCoord, err := pj.Forward(swappedNewYorkEPSG4326)
 
 	// The output axis order is not changed.
-	require.NoError(t, err)
-	assert.InDeltaSlice(t, newYorkEPSG3857[:], actualCoord[:], 1e-7)
+	assert.NoError(t, err)
+	assertInDeltaSlice(t, newYorkEPSG3857[:], actualCoord[:], 1e-7)
+}
+
+func assertInDelta(tb testing.TB, expected, actual, delta float64) {
+	tb.Helper()
+	if math.Abs(expected-actual) <= delta {
+		return
+	}
+	tb.Fatalf("Expected %f to be within %f of %f", actual, delta, expected)
+}
+
+func assertInDeltaSlice(tb testing.TB, expected, actual []float64, delta float64) {
+	tb.Helper()
+	assert.Equal(tb, len(expected), len(actual))
+	for i := range expected {
+		if math.Abs(expected[i]-actual[i]) > delta {
+			tb.Fatalf("Expected %f to be within %f of %f at index %d", actual[i], delta, expected[i], i)
+		}
+	}
 }

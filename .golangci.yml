@@ -8,7 +8,6 @@ linters:
   - contextcheck
   - cyclop
   - decorder
-  - depguard
   - dogsled
   - dupl
   - dupword
@@ -79,6 +78,7 @@ linters:
   - whitespace
   - wrapcheck
   disable:
+  - depguard
   - exhaustruct
   - funlen
   - gochecknoglobals
