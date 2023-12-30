@@ -19,6 +19,10 @@ Package go-proj provides an interface to [PROJ](https://proj.org).
 $ go get github.com/twpayne/go-proj/v10
 ```
 
+You must also install the PROJ development headers and libraries. These are
+typically in the package `libproj-dev` on Debian-like systems, `proj-devel` on
+RedHat-like systems, and `proj` in Homebrew.
+
 ## Example
 
 ```go
