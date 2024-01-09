@@ -137,7 +137,7 @@ func (p *PJ) LPDist(a, b Coord) float64 {
 }
 
 // LPZDist returns the geodesic distance between a and b in geodetic
-// coordinates, taking height above the ellipsoid into account.q
+// coordinates, taking height above the ellipsoid into account.
 func (p *PJ) LPZDist(a, b Coord) float64 {
 	p.context.Lock()
 	defer p.context.Unlock()
