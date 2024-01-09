@@ -22,7 +22,10 @@ linters:
   - forbidigo
   - forcetypeassert
   - gci
+  - ginkgolinter
+  - gocheckcompilerdirectives
   - gochecknoinits
+  - gochecksumtype
   - gocognit
   - goconst
   - gocritic
@@ -39,16 +42,20 @@ linters:
   - goprintffuncname
   - gosec
   - gosimple
+  - gosmopolitan
   - govet
   - grouper
   - importas
+  - inamedparam
   - ineffassign
   - interfacebloat
   - ireturn
   - loggercheck
   - maintidx
   - makezero
+  - mirror
   - misspell
+  - musttag
   - nakedret
   - nestif
   - nilerr
@@ -57,16 +64,23 @@ linters:
   - nolintlint
   - nonamedreturns
   - nosprintfhostport
+  - perfsprint
   - prealloc
   - predeclared
   - promlinter
+  - protogetter
   - reassign
   - revive
+  - rowserrcheck
+  - sloglint
+  - sqlclosecheck
   - staticcheck
   - stylecheck
+  - tagalign
   - tagliatelle
   - tenv
   - testableexamples
+  - testifylint
   - testpackage
   - thelper
   - tparallel
@@ -75,8 +89,10 @@ linters:
   - unparam
   - unused
   - usestdlibvars
+  - wastedassign
   - whitespace
   - wrapcheck
+  - zerologlint
   disable:
   - depguard
   - exhaustruct
@@ -86,11 +102,7 @@ linters:
   - lll
   - nlreturn
   - paralleltest
-  - rowserrcheck # https://github.com/golangci/golangci-lint/issues/2649
-  - sqlclosecheck # https://github.com/golangci/golangci-lint/issues/2649
-  - structcheck # https://github.com/golangci/golangci-lint/issues/2649
   - varnamelen
-  - wastedassign # https://github.com/golangci/golangci-lint/issues/2649
   - wsl
 
 linters-settings:
