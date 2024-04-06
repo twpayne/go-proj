@@ -3,11 +3,11 @@ package proj_test
 import (
 	"math"
 	"runtime"
+	"slices"
 	"strconv"
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
-	"golang.org/x/exp/slices"
 
 	"github.com/twpayne/go-proj/v10"
 )
