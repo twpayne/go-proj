@@ -39,4 +39,4 @@ jobs:
         go-version: stable
     - uses: golangci/golangci-lint-action@3cfe3a4abbb849e10058ce4af15d205b6da42804
       with:
-        version: v1.55.2
+        version: v1.57.2
