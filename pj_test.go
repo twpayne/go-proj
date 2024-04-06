@@ -503,18 +503,17 @@ func TestPJ_NormalizeForVisualizationForEastingNorthingCRS(t *testing.T) {
 
 func assertInDelta(tb testing.TB, expected, actual, delta float64) {
 	tb.Helper()
-	if math.Abs(expected-actual) <= delta {
-		return
+	if actualDelta := math.Abs(expected - actual); actualDelta > delta {
+		tb.Fatalf("Expected %e to be within %e of %e, but delta is %e", actual, delta, expected, actualDelta)
 	}
-	tb.Fatalf("Expected %f to be within %f of %f", actual, delta, expected)
 }
 
 func assertInDeltaSlice(tb testing.TB, expected, actual []float64, delta float64) {
 	tb.Helper()
 	assert.Equal(tb, len(expected), len(actual))
 	for i := range expected {
-		if math.Abs(expected[i]-actual[i]) > delta {
-			tb.Fatalf("Expected %f to be within %f of %f at index %d", actual[i], delta, expected[i], i)
+		if actualDelta := math.Abs(expected[i] - actual[i]); actualDelta > delta {
+			tb.Fatalf("Expected %e to be within %e of %e at index %d, but delta is %e", actual[i], delta, expected[i], i, actualDelta)
 		}
 	}
 }
