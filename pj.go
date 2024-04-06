@@ -42,11 +42,12 @@ func (p *PJ) Destroy() {
 	}
 }
 
-// Returns a new PJ instance whose axis order is the one expected for visualization
-// purposes. If the axis order of its source or target CRS is northing,easting, then
-// an axis swap operation will be inserted.
-// The axis order of geographic CRS will be longitude, latitude [,height], and the
-// one of projected CRS will be easting, northing [, height]
+// Returns a new PJ instance whose axis order is the one expected for
+// visualization purposes. If the axis order of its source or target CRS is
+// northing, easting, then an axis swap operation will be inserted.
+//
+// The axis order of geographic CRS will be longitude, latitude[, height], and
+// the one of projected CRS will be easting, northing [, height].
 func (p *PJ) NormalizeForVisualization() (*PJ, error) {
 	p.context.Lock()
 	defer p.context.Unlock()
@@ -63,7 +64,7 @@ func (p *PJ) ForwardBounds(bounds Bounds, densifyPoints int) (Bounds, error) {
 	return p.TransBounds(DirectionFwd, bounds, densifyPoints)
 }
 
-// ForwardArray transforms coorsd in the forward direction.
+// ForwardArray transforms coords in the forward direction.
 func (p *PJ) ForwardArray(coords []Coord) error {
 	return p.TransArray(DirectionFwd, coords)
 }
@@ -114,7 +115,7 @@ func (p *PJ) Inverse(coord Coord) (Coord, error) {
 	return p.Trans(DirectionInv, coord)
 }
 
-// InverseArray transforms coorsd in the inverse direction.
+// InverseArray transforms coords in the inverse direction.
 func (p *PJ) InverseArray(coords []Coord) error {
 	return p.TransArray(DirectionInv, coords)
 }
