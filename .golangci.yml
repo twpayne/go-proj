@@ -73,6 +73,7 @@ linters:
   - revive
   - rowserrcheck
   - sloglint
+  - spancheck
   - sqlclosecheck
   - staticcheck
   - stylecheck
@@ -94,11 +95,13 @@ linters:
   - wrapcheck
   - zerologlint
   disable:
+  - copyloopvar
   - depguard
   - exhaustruct
   - funlen
   - gochecknoglobals
   - gomnd
+  - intrange
   - lll
   - nlreturn
   - paralleltest
