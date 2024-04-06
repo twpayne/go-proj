@@ -226,17 +226,6 @@ func (p *PJ) TransFlatCoords(direction Direction, flatCoords []float64, stride, 
 
 // TransGeneric transforms a series of coordinates.
 func (p *PJ) TransGeneric(direction Direction, x *float64, sx, nx int, y *float64, sy, ny int, z *float64, sz, nz int, m *float64, sm, nm int) error {
-	maxN := nx
-	if ny > maxN {
-		maxN = ny
-	}
-	if nz > maxN {
-		maxN = nz
-	}
-	if nm > maxN {
-		maxN = nm
-	}
-
 	p.context.Lock()
 	defer p.context.Unlock()
 
@@ -248,7 +237,7 @@ func (p *PJ) TransGeneric(direction Direction, x *float64, sx, nx int, y *float6
 		(*C.double)(y), C.size_t(sy), C.size_t(ny),
 		(*C.double)(z), C.size_t(sz), C.size_t(nz),
 		(*C.double)(m), C.size_t(sm), C.size_t(nm),
-	)) != maxN {
+	)) != max(nx, ny, nz, nm) {
 		return p.context.newError(int(C.proj_errno(p.pj)))
 	}
 

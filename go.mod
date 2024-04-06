@@ -1,6 +1,6 @@
 module github.com/twpayne/go-proj/v10
 
-go 1.19
+go 1.21
 
 require (
 	github.com/alecthomas/assert/v2 v2.2.2
