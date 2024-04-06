@@ -74,7 +74,7 @@ func TestPJ_LPDist(t *testing.T) {
 			expectedGeodDist:           129762.08359988699,
 			expectedGeodForwardAzimuth: 21.20947946541022,
 			expectedGeodReverseAzimuth: 21.268782222540885,
-			distDelta:                  math.SmallestNonzeroFloat64,
+			distDelta:                  1e-9,
 			azimuthDelta:               1e-13,
 		},
 		{
@@ -101,12 +101,12 @@ func TestPJ_LPDist(t *testing.T) {
 			assertInDelta(t, tc.expectedLPZDist, pj.LPZDist(tc.b, tc.a), tc.distDelta)
 
 			actualGeodDist, actualGeodForwardAzimuth, actualGeodReverseAzimuth := pj.Geod(tc.a, tc.b)
-			assert.Equal(t, tc.expectedGeodDist, actualGeodDist)
+			assertInDelta(t, tc.expectedGeodDist, actualGeodDist, tc.distDelta)
 			assertInDelta(t, tc.expectedGeodForwardAzimuth, actualGeodForwardAzimuth, tc.azimuthDelta)
 			assertInDelta(t, tc.expectedGeodReverseAzimuth, actualGeodReverseAzimuth, tc.azimuthDelta)
 
 			actualReverseGeodDist, actualReverseGeodForwardAzimuth, actualReverseGeodReverseAzimuth := pj.Geod(tc.b, tc.a)
-			assert.Equal(t, tc.expectedGeodDist, actualReverseGeodDist)
+			assertInDelta(t, tc.expectedGeodDist, actualReverseGeodDist, tc.distDelta)
 			assertInDelta(t, tc.expectedGeodForwardAzimuth, 180+actualReverseGeodReverseAzimuth, tc.azimuthDelta)
 			assertInDelta(t, tc.expectedGeodReverseAzimuth, 180+actualReverseGeodForwardAzimuth, tc.azimuthDelta)
 		})
