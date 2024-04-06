@@ -13,11 +13,21 @@ func ExamplePJ_Forward() {
 	}
 
 	// Convert Zürich's WGS84 latitude/longitude to Web Mercator.
-	zurichEPSG4326 := proj.NewCoord(47.374444, 8.541111, 408, 0)
-	zurichEPSG3857, err := pj.Forward(zurichEPSG4326)
+	zurich4326 := proj.NewCoord(47.374444, 8.541111, 408, 0)
+	zurich3857, err := pj.Forward(zurich4326)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("x=%.6f y=%.6f z=%.6f", zurichEPSG3857.X(), zurichEPSG3857.Y(), zurichEPSG3857.Z())
-	// Output: x=950792.127329 y=6003408.475803 z=408.000000
+	fmt.Printf("forward: x=%.6f y=%.6f z=%.6f\n", zurich3857.X(), zurich3857.Y(), zurich3857.Z())
+
+	// ...and convert back.
+	zurich4326After, err := pj.Inverse(zurich3857)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("inverse: x=%.6f y=%.6f z=%.6f", zurich4326After.X(), zurich4326After.Y(), zurich4326After.Z())
+
+	// Output:
+	// forward: x=950792.127329 y=6003408.475803 z=408.000000
+	// inverse: x=47.374444 y=8.541111 z=408.000000
 }
