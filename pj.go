@@ -23,7 +23,7 @@ type PJ struct {
 	pj      *C.PJ
 }
 
-// A PJInfo contains information about a Proj.
+// A PJInfo contains information about a PJ.
 type PJInfo struct {
 	ID          string
 	Description string
