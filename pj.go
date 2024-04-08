@@ -145,7 +145,7 @@ func (p *PJ) LPZDist(a, b Coord) float64 {
 	return (float64)(C.proj_lpz_dist(p.pj, *(*C.PJ_COORD)(unsafe.Pointer(&a)), *(*C.PJ_COORD)(unsafe.Pointer(&b))))
 }
 
-// Trans transforms a single Coord.
+// Trans transforms a single Coord in place.
 func (p *PJ) Trans(direction Direction, coord Coord) (Coord, error) {
 	p.context.Lock()
 	defer p.context.Unlock()
