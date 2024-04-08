@@ -192,11 +192,11 @@ func TestPJ_Trans(t *testing.T) {
 
 			actualTargetCoord, err := pj.Forward(tc.sourceCoord)
 			assert.NoError(t, err)
-			assertInDeltaSlice(t, tc.targetCoord[:], actualTargetCoord[:], tc.targetDelta)
+			assertInDeltaFloat64Slice(t, tc.targetCoord[:], actualTargetCoord[:], tc.targetDelta)
 
 			actualSourceCoord, err := pj.Inverse(tc.targetCoord)
 			assert.NoError(t, err)
-			assertInDeltaSlice(t, tc.sourceCoord[:], actualSourceCoord[:], tc.sourceDelta)
+			assertInDeltaFloat64Slice(t, tc.sourceCoord[:], actualSourceCoord[:], tc.sourceDelta)
 		})
 	}
 }
@@ -284,13 +284,13 @@ func TestPJ_TransArray(t *testing.T) {
 			actualTargetCoords := slices.Clone(tc.sourceCoords)
 			assert.NoError(t, pj.ForwardArray(actualTargetCoords))
 			for i, actualTargetCoord := range actualTargetCoords {
-				assertInDeltaSlice(t, tc.targetCoords[i][:], actualTargetCoord[:], 1e1)
+				assertInDeltaFloat64Slice(t, tc.targetCoords[i][:], actualTargetCoord[:], 1e1)
 			}
 
 			actualSourceCoords := slices.Clone(tc.targetCoords)
 			assert.NoError(t, pj.InverseArray(actualSourceCoords))
 			for i, actualSourceCoord := range actualSourceCoords {
-				assertInDeltaSlice(t, tc.sourceCoords[i][:], actualSourceCoord[:], 1e-13)
+				assertInDeltaFloat64Slice(t, tc.sourceCoords[i][:], actualSourceCoord[:], 1e-13)
 			}
 		})
 	}
@@ -434,11 +434,11 @@ func TestPJ_TransFlatCoords(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			actualTargetFlatCoords := slices.Clone(tc.sourceFlatCoords)
 			assert.NoError(t, pj.ForwardFlatCoords(actualTargetFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
-			assertInDeltaSlice(t, tc.targetFlatCoords, actualTargetFlatCoords, 1e1)
+			assertInDeltaFloat64Slice(t, tc.targetFlatCoords, actualTargetFlatCoords, 1e1)
 
 			actualSourceFlatCoords := slices.Clone(tc.targetFlatCoords)
 			assert.NoError(t, pj.InverseFlatCoords(actualSourceFlatCoords, tc.stride, tc.zIndex, tc.mIndex))
-			assertInDeltaSlice(t, tc.sourceFlatCoords, actualSourceFlatCoords, 1e-9)
+			assertInDeltaFloat64Slice(t, tc.sourceFlatCoords, actualSourceFlatCoords, 1e-9)
 		})
 	}
 }
@@ -457,7 +457,7 @@ func TestPJ_NormalizeForVisualizationForNorthingEastingCRS(t *testing.T) {
 		actualCoord, err := pj.Forward(gdanskEPSG4326)
 		// Original axis order. X is northing, Y is easting.
 		assert.NoError(t, err)
-		assertInDeltaSlice(t, gdanskEPSG2180[:], actualCoord[:], 1e-7)
+		assertInDeltaFloat64Slice(t, gdanskEPSG2180[:], actualCoord[:], 1e-7)
 	})
 
 	t.Run("normalized axis order", func(t *testing.T) {
@@ -473,7 +473,7 @@ func TestPJ_NormalizeForVisualizationForNorthingEastingCRS(t *testing.T) {
 		// Normalized axis order. X is easting, Y is northing.
 		swappedGdanskEPSG2180 := proj.Coord{gdanskEPSG2180[1], gdanskEPSG2180[0], gdanskEPSG2180[2], gdanskEPSG2180[3]}
 		assert.NoError(t, err)
-		assertInDeltaSlice(t, swappedGdanskEPSG2180[:], actualCoord[:], 1e-7)
+		assertInDeltaFloat64Slice(t, swappedGdanskEPSG2180[:], actualCoord[:], 1e-7)
 	})
 }
 
@@ -498,7 +498,7 @@ func TestPJ_NormalizeForVisualizationForEastingNorthingCRS(t *testing.T) {
 
 	// The output axis order is not changed.
 	assert.NoError(t, err)
-	assertInDeltaSlice(t, newYorkEPSG3857[:], actualCoord[:], 1e-7)
+	assertInDeltaFloat64Slice(t, newYorkEPSG3857[:], actualCoord[:], 1e-7)
 }
 
 func assertInDelta(tb testing.TB, expected, actual, delta float64) {
@@ -508,7 +508,7 @@ func assertInDelta(tb testing.TB, expected, actual, delta float64) {
 	}
 }
 
-func assertInDeltaSlice(tb testing.TB, expected, actual []float64, delta float64) {
+func assertInDeltaFloat64Slice(tb testing.TB, expected, actual []float64, delta float64) {
 	tb.Helper()
 	assert.Equal(tb, len(expected), len(actual))
 	for i := range expected {

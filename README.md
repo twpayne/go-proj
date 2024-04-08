@@ -10,6 +10,7 @@ Package go-proj provides an interface to [PROJ](https://proj.org).
 * Idiomatic Go API, including complete error handling.
 * Supports PROJ versions 6 and upwards.
 * Compatible with all geometry libraries.
+* Convenience functions for handling coordinates as `[]float64`s.
 * Automatically handles C memory management.
 * Well tested.
 
