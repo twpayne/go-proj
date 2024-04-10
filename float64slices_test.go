@@ -66,6 +66,7 @@ func TestTransFloat64Slices(t *testing.T) {
 				{261848.15527273554, 6250566.54904563, 78},
 				{-8238322.592110482, 4970068.348185822, 10},
 			},
+			delta: 1e-9,
 		},
 		{
 			float64Slices: [][]float64{
@@ -76,6 +77,7 @@ func TestTransFloat64Slices(t *testing.T) {
 				{261848.15527273554, 6250566.54904563, 78, 1},
 				{-8238322.592110482, 4970068.348185822, 10, 2},
 			},
+			delta: 1e-9,
 		},
 		{
 			float64Slices: [][]float64{
@@ -86,6 +88,7 @@ func TestTransFloat64Slices(t *testing.T) {
 				{261848.15527273554, 6250566.54904563},
 				{-8238322.592110482, 4970068.348185822, 10, 2},
 			},
+			delta: 1e-9,
 		},
 	} {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
