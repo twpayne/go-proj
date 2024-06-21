@@ -27,14 +27,17 @@ func TestTransFloat64Slice(t *testing.T) {
 		{
 			float64Slice: []float64{723134.1266446244, 474831.4869142064},
 			expected:     []float64{54.371652, 18.612462},
+			delta:        1e-14,
 		},
 		{
 			float64Slice: []float64{723134.1266446244, 474831.4869142064, 11.1},
 			expected:     []float64{54.371652, 18.612462, 11.1},
+			delta:        1e-14,
 		},
 		{
 			float64Slice: []float64{723134.1266446244, 474831.4869142064, 11.1, 1},
 			expected:     []float64{54.371652, 18.612462, 11.1, 1},
+			delta:        1e-14,
 		},
 	} {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
