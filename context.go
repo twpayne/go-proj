@@ -108,11 +108,11 @@ func (c *Context) NewFromArgs(args ...string) (*PJ, error) {
 	c.Lock()
 	defer c.Unlock()
 
-	cArgs := make([]*C.char, 0, len(args))
-	for _, arg := range args {
-		cArg := C.CString(arg)
+	cArgs := make([]*C.char, len(args))
+	for i := range cArgs {
+		cArg := C.CString(args[i])
 		defer C.free(unsafe.Pointer(cArg))
-		cArgs = append(cArgs, cArg)
+		cArgs[i] = cArg
 	}
 
 	return c.newPJ(C.proj_create_argv(c.pjContext, (C.int)(len(cArgs)), (**C.char)(unsafe.Pointer(&cArgs[0]))))
