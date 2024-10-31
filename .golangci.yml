@@ -1,3 +1,6 @@
+run:
+  version: '1.22'
+
 linters:
   enable:
   - asasalint
