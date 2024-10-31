@@ -74,6 +74,11 @@ func (pj *PJ) ForwardFlatCoords(flatCoords []float64, stride, zIndex, mIndex int
 	return pj.TransFlatCoords(DirectionFwd, flatCoords, stride, zIndex, mIndex)
 }
 
+// ForwardFloat64Slice transforms float64 in place in the forward direction.
+func (pj *PJ) ForwardFloat64Slice(float64Slice []float64) ([]float64, error) {
+	return pj.TransFloat64Slice(DirectionFwd, float64Slice)
+}
+
 // Geod returns the distance, forward azimuth, and reverse azimuth between a and b.
 func (pj *PJ) Geod(a, b Coord) (float64, float64, float64) {
 	pj.context.Lock()
@@ -128,6 +133,11 @@ func (pj *PJ) InverseBounds(bounds Bounds, densifyPoints int) (Bounds, error) {
 // InverseFlatCoords transforms flatCoords in the inverse direction.
 func (pj *PJ) InverseFlatCoords(flatCoords []float64, stride, zIndex, mIndex int) error {
 	return pj.TransFlatCoords(DirectionInv, flatCoords, stride, zIndex, mIndex)
+}
+
+// InverseFloat64Slice transforms float64 in place in the forward direction.
+func (pj *PJ) InverseFloat64Slice(float64Slice []float64) ([]float64, error) {
+	return pj.TransFloat64Slice(DirectionInv, float64Slice)
 }
 
 // LPDist returns the geodesic distance between a and b in geodetic coordinates.
@@ -224,6 +234,18 @@ func (pj *PJ) TransFlatCoords(direction Direction, flatCoords []float64, stride,
 	}
 
 	return pj.TransGeneric(direction, x, sx, nx, y, sy, ny, z, sz, nz, m, sm, nm)
+}
+
+// TransFloat64Slice transforms a []float64 in place.
+func (pj *PJ) TransFloat64Slice(direction Direction, float64Slice []float64) ([]float64, error) {
+	var coord Coord
+	copy(coord[:], float64Slice)
+	transCoord, err := pj.Trans(direction, coord)
+	if err != nil {
+		return nil, err
+	}
+	copy(float64Slice, transCoord[:])
+	return float64Slice, nil
 }
 
 // TransGeneric transforms a series of coordinates.
