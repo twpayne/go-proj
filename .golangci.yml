@@ -7,8 +7,10 @@ linters:
   - asciicheck
   - bidichk
   - bodyclose
+  - canonicalheader
   - containedctx
   - contextcheck
+  - copyloopvar
   - cyclop
   - decorder
   - dogsled
@@ -21,7 +23,6 @@ linters:
   - errname
   - errorlint
   - exhaustive
-  - exportloopref
   - fatcontext
   - forbidigo
   - forcetypeassert
@@ -52,6 +53,7 @@ linters:
   - inamedparam
   - ineffassign
   - interfacebloat
+  - intrange
   - ireturn
   - loggercheck
   - maintidx
@@ -98,13 +100,11 @@ linters:
   - wrapcheck
   - zerologlint
   disable:
-  - copyloopvar
   - depguard
   - exhaustruct
   - funlen
   - gochecknoglobals
   - gomnd
-  - intrange
   - lll
   - nlreturn
   - paralleltest
