@@ -178,6 +178,7 @@ func (pj *PJ) TransArray(direction Direction, coords []Coord) error {
 	return nil
 }
 
+// TransBounds transforms bounds.
 func (pj *PJ) TransBounds(direction Direction, bounds Bounds, densifyPoints int) (Bounds, error) {
 	pj.context.Lock()
 	defer pj.context.Unlock()
