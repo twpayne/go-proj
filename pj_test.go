@@ -542,6 +542,64 @@ func TestPJ_NormalizeForVisualizationForEastingNorthingCRS(t *testing.T) {
 	assertInDeltaFloat64Slice(t, newYorkEPSG3857[:], actualCoord[:], 1e-7)
 }
 
+func TestPJ_TransFloat64Slices(t *testing.T) {
+	for i, tc := range []struct {
+		float64Slices [][]float64
+		expected      [][]float64
+		delta         float64
+	}{
+		{
+			float64Slices: nil,
+			expected:      nil,
+		},
+		{
+			float64Slices: [][]float64{},
+			expected:      [][]float64{},
+		},
+		{
+			float64Slices: [][]float64{
+				{48.856613, 2.352222, 78},
+				{40.712778, -74.006111, 10},
+			},
+			expected: [][]float64{
+				{261848.15527273554, 6250566.54904563, 78},
+				{-8238322.592110482, 4970068.348185822, 10},
+			},
+			delta: 1e-9,
+		},
+		{
+			float64Slices: [][]float64{
+				{48.856613, 2.352222, 78, 1},
+				{40.712778, -74.006111, 10, 2},
+			},
+			expected: [][]float64{
+				{261848.15527273554, 6250566.54904563, 78, 1},
+				{-8238322.592110482, 4970068.348185822, 10, 2},
+			},
+			delta: 1e-9,
+		},
+		{
+			float64Slices: [][]float64{
+				{48.856613, 2.352222},
+				{40.712778, -74.006111, 10, 2},
+			},
+			expected: [][]float64{
+				{261848.15527273554, 6250566.54904563},
+				{-8238322.592110482, 4970068.348185822, 10, 2},
+			},
+			delta: 1e-9,
+		},
+	} {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			pj, err := proj.NewCRSToCRS("EPSG:4326", "EPSG:3857", nil)
+			assert.NoError(t, err)
+			float64Slices := slices.Clone(tc.float64Slices)
+			assert.NoError(t, pj.ForwardFloat64Slices(float64Slices))
+			assertInDeltaFloat64Slices(t, tc.expected, float64Slices, tc.delta)
+		})
+	}
+}
+
 func assertInDelta(tb testing.TB, expected, actual, delta float64) {
 	tb.Helper()
 	if actualDelta := math.Abs(expected - actual); actualDelta > delta {
@@ -556,5 +614,13 @@ func assertInDeltaFloat64Slice(tb testing.TB, expected, actual []float64, delta 
 		if actualDelta := math.Abs(expected[i] - actual[i]); actualDelta > delta {
 			tb.Fatalf("Expected %e to be within %e of %e at index %d, but delta is %e", actual[i], delta, expected[i], i, actualDelta)
 		}
+	}
+}
+
+func assertInDeltaFloat64Slices(tb testing.TB, expected, actual [][]float64, delta float64) {
+	tb.Helper()
+	assert.Equal(tb, len(expected), len(actual))
+	for i := range expected {
+		assertInDeltaFloat64Slice(tb, expected[i], actual[i], delta)
 	}
 }
