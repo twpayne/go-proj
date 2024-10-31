@@ -32,13 +32,13 @@ type PJInfo struct {
 	Accuracy    float64
 }
 
-// Destroy releases all resources associated with p.
-func (p *PJ) Destroy() {
-	p.context.Lock()
-	defer p.context.Unlock()
-	if p.pj != nil {
-		C.proj_destroy(p.pj)
-		p.pj = nil
+// Destroy releases all resources associated with pj.
+func (pj *PJ) Destroy() {
+	pj.context.Lock()
+	defer pj.context.Unlock()
+	if pj.pj != nil {
+		C.proj_destroy(pj.pj)
+		pj.pj = nil
 	}
 }
 
@@ -48,54 +48,54 @@ func (p *PJ) Destroy() {
 //
 // The axis order of geographic CRS will be longitude, latitude[, height], and
 // the one of projected CRS will be easting, northing [, height].
-func (p *PJ) NormalizeForVisualization() (*PJ, error) {
-	p.context.Lock()
-	defer p.context.Unlock()
-	return p.context.newPJ(C.proj_normalize_for_visualization(p.context.pjContext, p.pj))
+func (pj *PJ) NormalizeForVisualization() (*PJ, error) {
+	pj.context.Lock()
+	defer pj.context.Unlock()
+	return pj.context.newPJ(C.proj_normalize_for_visualization(pj.context.pjContext, pj.pj))
 }
 
 // Forward transforms coord in the forward direction.
-func (p *PJ) Forward(coord Coord) (Coord, error) {
-	return p.Trans(DirectionFwd, coord)
+func (pj *PJ) Forward(coord Coord) (Coord, error) {
+	return pj.Trans(DirectionFwd, coord)
 }
 
 // ForwardBounds transforms bounds in the forward direction.
-func (p *PJ) ForwardBounds(bounds Bounds, densifyPoints int) (Bounds, error) {
-	return p.TransBounds(DirectionFwd, bounds, densifyPoints)
+func (pj *PJ) ForwardBounds(bounds Bounds, densifyPoints int) (Bounds, error) {
+	return pj.TransBounds(DirectionFwd, bounds, densifyPoints)
 }
 
 // ForwardArray transforms coords in the forward direction.
-func (p *PJ) ForwardArray(coords []Coord) error {
-	return p.TransArray(DirectionFwd, coords)
+func (pj *PJ) ForwardArray(coords []Coord) error {
+	return pj.TransArray(DirectionFwd, coords)
 }
 
 // ForwardFlatCoords transforms flatCoords in the forward direction.
-func (p *PJ) ForwardFlatCoords(flatCoords []float64, stride, zIndex, mIndex int) error {
-	return p.TransFlatCoords(DirectionFwd, flatCoords, stride, zIndex, mIndex)
+func (pj *PJ) ForwardFlatCoords(flatCoords []float64, stride, zIndex, mIndex int) error {
+	return pj.TransFlatCoords(DirectionFwd, flatCoords, stride, zIndex, mIndex)
 }
 
 // Geod returns the distance, forward azimuth, and reverse azimuth between a and b.
-func (p *PJ) Geod(a, b Coord) (float64, float64, float64) {
-	p.context.Lock()
-	defer p.context.Unlock()
-	cCoord := C.proj_geod(p.pj, *(*C.PJ_COORD)(unsafe.Pointer(&a)), *(*C.PJ_COORD)(unsafe.Pointer(&b)))
+func (pj *PJ) Geod(a, b Coord) (float64, float64, float64) {
+	pj.context.Lock()
+	defer pj.context.Unlock()
+	cCoord := C.proj_geod(pj.pj, *(*C.PJ_COORD)(unsafe.Pointer(&a)), *(*C.PJ_COORD)(unsafe.Pointer(&b)))
 	cGeod := *(*C.PJ_GEOD)(unsafe.Pointer(&cCoord))
 	return (float64)(cGeod.s), (float64)(cGeod.a1), (float64)(cGeod.a2)
 }
 
 // GetLastUsedOperation returns the operation used in the last call to Trans.
-func (p *PJ) GetLastUsedOperation() (*PJ, error) {
-	p.context.Lock()
-	defer p.context.Unlock()
-	return p.context.newPJ(C.proj_trans_get_last_used_operation(p.pj))
+func (pj *PJ) GetLastUsedOperation() (*PJ, error) {
+	pj.context.Lock()
+	defer pj.context.Unlock()
+	return pj.context.newPJ(C.proj_trans_get_last_used_operation(pj.pj))
 }
 
-// Info returns information about p.
-func (p *PJ) Info() PJInfo {
-	p.context.Lock()
-	defer p.context.Unlock()
+// Info returns information about pj.
+func (pj *PJ) Info() PJInfo {
+	pj.context.Lock()
+	defer pj.context.Unlock()
 
-	cProjInfo := C.proj_pj_info(p.pj)
+	cProjInfo := C.proj_pj_info(pj.pj)
 	return PJInfo{
 		ID:          C.GoString(cProjInfo.id),
 		Description: C.GoString(cProjInfo.description),
@@ -105,95 +105,95 @@ func (p *PJ) Info() PJInfo {
 	}
 }
 
-// IsCRS returns whether p is a CRS.
-func (p *PJ) IsCRS() bool {
-	return C.proj_is_crs(p.pj) != 0
+// IsCRS returns whether pj is a CRS.
+func (pj *PJ) IsCRS() bool {
+	return C.proj_is_crs(pj.pj) != 0
 }
 
 // Inverse transforms coord in the inverse direction.
-func (p *PJ) Inverse(coord Coord) (Coord, error) {
-	return p.Trans(DirectionInv, coord)
+func (pj *PJ) Inverse(coord Coord) (Coord, error) {
+	return pj.Trans(DirectionInv, coord)
 }
 
 // InverseArray transforms coords in the inverse direction.
-func (p *PJ) InverseArray(coords []Coord) error {
-	return p.TransArray(DirectionInv, coords)
+func (pj *PJ) InverseArray(coords []Coord) error {
+	return pj.TransArray(DirectionInv, coords)
 }
 
 // InverseBounds transforms bounds in the forward direction.
-func (p *PJ) InverseBounds(bounds Bounds, densifyPoints int) (Bounds, error) {
-	return p.TransBounds(DirectionInv, bounds, densifyPoints)
+func (pj *PJ) InverseBounds(bounds Bounds, densifyPoints int) (Bounds, error) {
+	return pj.TransBounds(DirectionInv, bounds, densifyPoints)
 }
 
 // InverseFlatCoords transforms flatCoords in the inverse direction.
-func (p *PJ) InverseFlatCoords(flatCoords []float64, stride, zIndex, mIndex int) error {
-	return p.TransFlatCoords(DirectionInv, flatCoords, stride, zIndex, mIndex)
+func (pj *PJ) InverseFlatCoords(flatCoords []float64, stride, zIndex, mIndex int) error {
+	return pj.TransFlatCoords(DirectionInv, flatCoords, stride, zIndex, mIndex)
 }
 
 // LPDist returns the geodesic distance between a and b in geodetic coordinates.
-func (p *PJ) LPDist(a, b Coord) float64 {
-	p.context.Lock()
-	defer p.context.Unlock()
-	return (float64)(C.proj_lp_dist(p.pj, *(*C.PJ_COORD)(unsafe.Pointer(&a)), *(*C.PJ_COORD)(unsafe.Pointer(&b))))
+func (pj *PJ) LPDist(a, b Coord) float64 {
+	pj.context.Lock()
+	defer pj.context.Unlock()
+	return (float64)(C.proj_lp_dist(pj.pj, *(*C.PJ_COORD)(unsafe.Pointer(&a)), *(*C.PJ_COORD)(unsafe.Pointer(&b))))
 }
 
 // LPZDist returns the geodesic distance between a and b in geodetic
 // coordinates, taking height above the ellipsoid into account.
-func (p *PJ) LPZDist(a, b Coord) float64 {
-	p.context.Lock()
-	defer p.context.Unlock()
-	return (float64)(C.proj_lpz_dist(p.pj, *(*C.PJ_COORD)(unsafe.Pointer(&a)), *(*C.PJ_COORD)(unsafe.Pointer(&b))))
+func (pj *PJ) LPZDist(a, b Coord) float64 {
+	pj.context.Lock()
+	defer pj.context.Unlock()
+	return (float64)(C.proj_lpz_dist(pj.pj, *(*C.PJ_COORD)(unsafe.Pointer(&a)), *(*C.PJ_COORD)(unsafe.Pointer(&b))))
 }
 
 // Trans transforms a single Coord in place.
-func (p *PJ) Trans(direction Direction, coord Coord) (Coord, error) {
-	p.context.Lock()
-	defer p.context.Unlock()
+func (pj *PJ) Trans(direction Direction, coord Coord) (Coord, error) {
+	pj.context.Lock()
+	defer pj.context.Unlock()
 
-	lastErrno := C.proj_errno_reset(p.pj)
-	defer C.proj_errno_restore(p.pj, lastErrno)
+	lastErrno := C.proj_errno_reset(pj.pj)
+	defer C.proj_errno_restore(pj.pj, lastErrno)
 
-	pjCoord := C.proj_trans(p.pj, (C.PJ_DIRECTION)(direction), *(*C.PJ_COORD)(unsafe.Pointer(&coord)))
-	if errno := int(C.proj_errno(p.pj)); errno != 0 {
-		return Coord{}, p.context.newError(errno)
+	pjCoord := C.proj_trans(pj.pj, (C.PJ_DIRECTION)(direction), *(*C.PJ_COORD)(unsafe.Pointer(&coord)))
+	if errno := int(C.proj_errno(pj.pj)); errno != 0 {
+		return Coord{}, pj.context.newError(errno)
 	}
 	return *(*Coord)(unsafe.Pointer(&pjCoord)), nil
 }
 
 // TransArray transforms an array of Coords.
-func (p *PJ) TransArray(direction Direction, coords []Coord) error {
+func (pj *PJ) TransArray(direction Direction, coords []Coord) error {
 	if len(coords) == 0 {
 		return nil
 	}
 
-	p.context.Lock()
-	defer p.context.Unlock()
+	pj.context.Lock()
+	defer pj.context.Unlock()
 
-	lastErrno := C.proj_errno_reset(p.pj)
-	defer C.proj_errno_restore(p.pj, lastErrno)
+	lastErrno := C.proj_errno_reset(pj.pj)
+	defer C.proj_errno_restore(pj.pj, lastErrno)
 
-	if errno := int(C.proj_trans_array(p.pj, (C.PJ_DIRECTION)(direction), (C.size_t)(len(coords)), (*C.PJ_COORD)(unsafe.Pointer(&coords[0])))); errno != 0 {
-		return p.context.newError(errno)
+	if errno := int(C.proj_trans_array(pj.pj, (C.PJ_DIRECTION)(direction), (C.size_t)(len(coords)), (*C.PJ_COORD)(unsafe.Pointer(&coords[0])))); errno != 0 {
+		return pj.context.newError(errno)
 	}
 	return nil
 }
 
-func (p *PJ) TransBounds(direction Direction, bounds Bounds, densifyPoints int) (Bounds, error) {
-	p.context.Lock()
-	defer p.context.Unlock()
+func (pj *PJ) TransBounds(direction Direction, bounds Bounds, densifyPoints int) (Bounds, error) {
+	pj.context.Lock()
+	defer pj.context.Unlock()
 
 	var transBounds Bounds
-	if C.proj_trans_bounds(p.context.pjContext, p.pj, (C.PJ_DIRECTION)(direction),
+	if C.proj_trans_bounds(pj.context.pjContext, pj.pj, (C.PJ_DIRECTION)(direction),
 		(C.double)(bounds.XMin), (C.double)(bounds.YMin), (C.double)(bounds.XMax), (C.double)(bounds.YMax),
 		(*C.double)(&transBounds.XMin), (*C.double)(&transBounds.YMin), (*C.double)(&transBounds.XMax), (*C.double)(&transBounds.YMax),
 		C.int(densifyPoints)) == 0 {
-		return Bounds{}, p.context.newError(int(C.proj_errno(p.pj)))
+		return Bounds{}, pj.context.newError(int(C.proj_errno(pj.pj)))
 	}
 	return transBounds, nil
 }
 
 // TransFlatCoords transforms an array of flat coordinates.
-func (p *PJ) TransFlatCoords(direction Direction, flatCoords []float64, stride, zIndex, mIndex int) error {
+func (pj *PJ) TransFlatCoords(direction Direction, flatCoords []float64, stride, zIndex, mIndex int) error {
 	if len(flatCoords) == 0 {
 		return nil
 	}
@@ -222,24 +222,24 @@ func (p *PJ) TransFlatCoords(direction Direction, flatCoords []float64, stride, 
 		nm = n
 	}
 
-	return p.TransGeneric(direction, x, sx, nx, y, sy, ny, z, sz, nz, m, sm, nm)
+	return pj.TransGeneric(direction, x, sx, nx, y, sy, ny, z, sz, nz, m, sm, nm)
 }
 
 // TransGeneric transforms a series of coordinates.
-func (p *PJ) TransGeneric(direction Direction, x *float64, sx, nx int, y *float64, sy, ny int, z *float64, sz, nz int, m *float64, sm, nm int) error {
-	p.context.Lock()
-	defer p.context.Unlock()
+func (pj *PJ) TransGeneric(direction Direction, x *float64, sx, nx int, y *float64, sy, ny int, z *float64, sz, nz int, m *float64, sm, nm int) error {
+	pj.context.Lock()
+	defer pj.context.Unlock()
 
-	lastErrno := C.proj_errno_reset(p.pj)
-	defer C.proj_errno_restore(p.pj, lastErrno)
+	lastErrno := C.proj_errno_reset(pj.pj)
+	defer C.proj_errno_restore(pj.pj, lastErrno)
 
-	if int(C.proj_trans_generic(p.pj, (C.PJ_DIRECTION)(direction),
+	if int(C.proj_trans_generic(pj.pj, (C.PJ_DIRECTION)(direction),
 		(*C.double)(x), C.size_t(sx), C.size_t(nx),
 		(*C.double)(y), C.size_t(sy), C.size_t(ny),
 		(*C.double)(z), C.size_t(sz), C.size_t(nz),
 		(*C.double)(m), C.size_t(sm), C.size_t(nm),
 	)) != max(nx, ny, nz, nm) {
-		return p.context.newError(int(C.proj_errno(p.pj)))
+		return pj.context.newError(int(C.proj_errno(pj.pj)))
 	}
 
 	return nil
