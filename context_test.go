@@ -139,3 +139,18 @@ func TestContext_NewFromArgs(t *testing.T) {
 		})
 	}
 }
+
+func TestContext_SetSearchPaths(t *testing.T) {
+	defer runtime.GC()
+
+	context := proj.NewContext()
+	assert.NotZero(t, context)
+
+	// The C function does not return any error so we only validate
+	// that executing the SetSearchPaths function call
+	// does not panic considering various boundary conditions
+	context.SetSearchPaths(nil)
+	context.SetSearchPaths([]string{})
+	context.SetSearchPaths([]string{"/tmp/data"})
+	context.SetSearchPaths([]string{"/tmp/data", "/tmp/data2"})
+}
