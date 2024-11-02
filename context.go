@@ -39,6 +39,22 @@ func (c *Context) Destroy() {
 	}
 }
 
+// SetSearchPaths sets the paths PROJ should be exploring to find the PROJ Data files.
+func (c *Context) SetSearchPaths(paths []string) {
+	c.Lock()
+	defer c.Unlock()
+	cPaths := make([]*C.char, len(paths))
+	var pathPtr unsafe.Pointer
+	for i, path := range paths {
+		cPaths[i] = C.CString(path)
+		defer C.free(unsafe.Pointer(cPaths[i]))
+	}
+	if len(paths) > 0 {
+		pathPtr = unsafe.Pointer(&cPaths[0])
+	}
+	C.proj_context_set_search_paths(c.pjContext, C.int(len(cPaths)), (**C.char)(pathPtr))
+}
+
 func (c *Context) Lock() {
 	c.mutex.Lock()
 }
