@@ -12,6 +12,10 @@ import (
 
 var defaultContext = &Context{}
 
+func init() {
+	C.proj_log_level(nil, C.PJ_LOG_NONE)
+}
+
 // A Context is a context.
 type Context struct {
 	mutex     sync.Mutex

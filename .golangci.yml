@@ -29,7 +29,6 @@ linters:
   - gci
   - ginkgolinter
   - gocheckcompilerdirectives
-  - gochecknoinits
   - gochecksumtype
   - gocognit
   - goconst
@@ -104,6 +103,7 @@ linters:
   - exhaustruct
   - funlen
   - gochecknoglobals
+  - gochecknoinits
   - gomnd
   - lll
   - nlreturn
