@@ -23,7 +23,7 @@ jobs:
       run: |
         sudo apt-get install -y libproj-dev
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-    - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed
+    - uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a
       with:
         go-version: ${{ matrix.go-version }}
     - name: Test
@@ -35,10 +35,10 @@ jobs:
       run: |
         sudo apt-get install -y libproj-dev
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-    - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed
+    - uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a
       with:
         cache: true
         go-version: stable
     - uses: golangci/golangci-lint-action@971e284b6050e8a5849b72094c50ab08da042db8
       with:
-        version: v1.61.0
+        version: v1.62.2

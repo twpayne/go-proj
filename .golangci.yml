@@ -1,5 +1,5 @@
 run:
-  version: '1.22'
+  go: '1.22'
 
 linters:
   enable:
@@ -48,6 +48,7 @@ linters:
   - gosmopolitan
   - govet
   - grouper
+  - iface
   - importas
   - inamedparam
   - ineffassign
@@ -74,6 +75,7 @@ linters:
   - promlinter
   - protogetter
   - reassign
+  - recvcheck
   - revive
   - rowserrcheck
   - sloglint
@@ -104,8 +106,8 @@ linters:
   - funlen
   - gochecknoglobals
   - gochecknoinits
-  - gomnd
   - lll
+  - mnd
   - nlreturn
   - paralleltest
   - varnamelen
