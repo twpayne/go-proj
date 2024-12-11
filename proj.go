@@ -64,13 +64,13 @@ func NewCoord(x, y, z, m float64) Coord {
 
 // DegToRad returns a new Coord with the first two elements transformed from
 // degrees to radians.
-func (c Coord) DegToRad() Coord {
+func (c *Coord) DegToRad() Coord {
 	return Coord{math.Pi * c[0] / 180, math.Pi * c[1] / 180, c[2], c[3]}
 }
 
 // RadToDeg returns a new Coord with the first two elements transformed from
 // radians to degrees.
-func (c Coord) RadToDeg() Coord {
+func (c *Coord) RadToDeg() Coord {
 	return Coord{180 * c[0] / math.Pi, 180 * c[1] / math.Pi, c[2], c[3]}
 }
 
