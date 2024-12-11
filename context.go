@@ -10,6 +10,16 @@ import (
 	"unsafe"
 )
 
+type LogLevel C.PJ_LOG_LEVEL
+
+const (
+	LogLevelNone  LogLevel = C.PJ_LOG_NONE
+	LogLevelError LogLevel = C.PJ_LOG_ERROR
+	LogLevelDebug LogLevel = C.PJ_LOG_DEBUG
+	LogLevelTrace LogLevel = C.PJ_LOG_TRACE
+	LogLevelTell  LogLevel = C.PJ_LOG_TELL
+)
+
 var defaultContext = &Context{}
 
 func init() {
@@ -41,6 +51,13 @@ func (c *Context) Destroy() {
 		C.proj_context_destroy(c.pjContext)
 		c.pjContext = nil
 	}
+}
+
+// SetLogLevel sets the log level.
+func (c *Context) SetLogLevel(logLevel LogLevel) {
+	c.Lock()
+	defer c.Unlock()
+	C.proj_log_level(c.pjContext, C.PJ_LOG_LEVEL(logLevel))
 }
 
 // SetSearchPaths sets the paths PROJ should be exploring to find the PROJ Data files.
@@ -169,6 +186,11 @@ func (c *Context) newPJ(cPJ *C.PJ) (*PJ, error) {
 	}
 	runtime.SetFinalizer(pj, (*PJ).Destroy)
 	return pj, nil
+}
+
+// SetLogLevel sets the log level for the default context.
+func SetLogLevel(logLevel LogLevel) {
+	defaultContext.SetLogLevel(logLevel)
 }
 
 // New returns a PJ with the given definition.
