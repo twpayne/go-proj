@@ -57,9 +57,9 @@ func (a *Area) Destroy() {
 	}
 }
 
-// NewCoord returns a new Coord.
-func NewCoord(x, y, z, m float64) Coord {
-	return Coord{x, y, z, m}
+// NewCoord returns a new Coord where y is latitude and x longitude
+func NewCoord(y, x, z, m float64) Coord {
+	return Coord{y, x, z, m}
 }
 
 // DegToRad returns a new Coord with the first two elements transformed from
