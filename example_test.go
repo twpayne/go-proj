@@ -11,7 +11,6 @@ func ExamplePJ_Forward() {
 	if err != nil {
 		panic(err)
 	}
-	defer pj.Destroy()
 
 	// Start with Zürich's WGS84 latitude/longitude.
 	zurich4326 := proj.NewCoord(47.374444, 8.541111, 408, 0)
