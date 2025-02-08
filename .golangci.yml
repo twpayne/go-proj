@@ -1,5 +1,5 @@
 run:
-  go: '1.22'
+  go: '1.24'
 
 linters:
   enable:
@@ -87,7 +87,6 @@ linters:
   - stylecheck
   - tagalign
   - tagliatelle
-  - tenv
   - testableexamples
   - testifylint
   - testpackage

@@ -12,8 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         go-version:
-        - stable
-        - oldstable
+        - '1.24'
         runs-on:
         - ubuntu-20.04
         - ubuntu-22.04
@@ -39,6 +38,6 @@ jobs:
       with:
         cache: true
         go-version: stable
-    - uses: golangci/golangci-lint-action@e60da84bfae8c7920a47be973d75e15710aa8bd7
+    - uses: golangci/golangci-lint-action@e0ebdd245eea59746bb0b28ea6a9871d3e35fbc9
       with:
-        version: v1.63.4
+        version: v1.64.2
