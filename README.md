@@ -1,6 +1,6 @@
 # go-proj
 
-[![GoDoc](https://pkg.go.dev/badge/github.com/twpayne/go-proj/v10)](https://pkg.go.dev/github.com/twpayne/go-proj/v10)
+[![GoDoc](https://pkg.go.dev/badge/github.com/twpayne/go-proj/v11)](https://pkg.go.dev/github.com/twpayne/go-proj/v11)
 
 Package go-proj provides an interface to [PROJ](https://proj.org).
 
@@ -17,7 +17,7 @@ Package go-proj provides an interface to [PROJ](https://proj.org).
 ## Install
 
 ```console
-$ go get github.com/twpayne/go-proj/v10
+$ go get github.com/twpayne/go-proj/v11
 ```
 
 You must also install the PROJ development headers and libraries. These are
