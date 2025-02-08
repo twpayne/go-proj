@@ -23,6 +23,7 @@ linters:
   - errname
   - errorlint
   - exhaustive
+  - exptostd
   - fatcontext
   - forbidigo
   - forcetypeassert
@@ -64,6 +65,7 @@ linters:
   - nakedret
   - nestif
   - nilerr
+  - nilnesserr
   - nilnil
   - noctx
   - nolintlint
@@ -96,6 +98,7 @@ linters:
   - unparam
   - unused
   - usestdlibvars
+  - usetesting
   - wastedassign
   - whitespace
   - wrapcheck
