@@ -19,7 +19,7 @@ const (
 
 // An Area is an area.
 type Area struct {
-	pjArea *C.PJ_AREA
+	cPJArea *C.PJ_AREA
 }
 
 type Bounds struct {
@@ -40,21 +40,15 @@ type Error struct {
 
 // NewArea returns a new Area.
 func NewArea(westLonDegree, southLatDegree, eastLonDegree, northLatDegree float64) *Area {
-	pjArea := C.proj_area_create()
-	C.proj_area_set_bbox(pjArea, (C.double)(westLonDegree), (C.double)(southLatDegree), (C.double)(eastLonDegree), (C.double)(northLatDegree))
+	cPJArea := C.proj_area_create()
+	C.proj_area_set_bbox(cPJArea, (C.double)(westLonDegree), (C.double)(southLatDegree), (C.double)(eastLonDegree), (C.double)(northLatDegree))
 	a := &Area{
-		pjArea: pjArea,
+		cPJArea: cPJArea,
 	}
-	runtime.SetFinalizer(a, (*Area).Destroy)
+	runtime.AddCleanup(a, func(cPJArea *C.PJ_AREA) {
+		C.proj_area_destroy(cPJArea)
+	}, cPJArea)
 	return a
-}
-
-// Destroy frees all resources associated with a.
-func (a *Area) Destroy() {
-	if a.pjArea != nil {
-		C.proj_area_destroy(a.pjArea)
-		a.pjArea = nil
-	}
 }
 
 // NewCoord returns a new Coord.
