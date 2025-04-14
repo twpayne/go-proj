@@ -1,6 +1,34 @@
 package proj
 
 // #include "go-proj.h"
+// #cgo nocallback proj_errno
+// #cgo nocallback proj_errno_reset
+// #cgo nocallback proj_errno_restore
+// #cgo nocallback proj_geod
+// #cgo nocallback proj_is_crs
+// #cgo nocallback proj_lp_dist
+// #cgo nocallback proj_lpz_dist
+// #cgo nocallback proj_normalize_for_visualization
+// #cgo nocallback proj_pj_info
+// #cgo nocallback proj_trans
+// #cgo nocallback proj_trans_array
+// #cgo nocallback proj_trans_bounds
+// #cgo nocallback proj_trans_generic
+// #cgo nocallback proj_trans_get_last_used_operation
+// #cgo noescape proj_errno
+// #cgo noescape proj_errno_reset
+// #cgo noescape proj_errno_restore
+// #cgo noescape proj_geod
+// #cgo noescape proj_is_crs
+// #cgo noescape proj_lp_dist
+// #cgo noescape proj_lpz_dist
+// #cgo noescape proj_normalize_for_visualization
+// #cgo noescape proj_pj_info
+// #cgo noescape proj_trans
+// #cgo noescape proj_trans_array
+// #cgo noescape proj_trans_bounds
+// #cgo noescape proj_trans_generic
+// #cgo noescape proj_trans_get_last_used_operation
 import "C"
 
 import (
