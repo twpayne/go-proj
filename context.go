@@ -2,6 +2,28 @@ package proj
 
 // #include <stdlib.h>
 // #include "go-proj.h"
+// #cgo nocallback proj_context_create
+// #cgo nocallback proj_context_destroy
+// #cgo nocallback proj_context_errno
+// #cgo nocallback proj_context_errno_string
+// #cgo nocallback proj_context_set_search_paths
+// #cgo nocallback proj_create
+// #cgo nocallback proj_create_argv
+// #cgo nocallback proj_create_crs_to_crs
+// #cgo nocallback proj_create_crs_to_crs_from_pj
+// #cgo nocallback proj_destroy
+// #cgo nocallback proj_log_level
+// #cgo noescape proj_context_create
+// #cgo noescape proj_context_destroy
+// #cgo noescape proj_context_errno
+// #cgo noescape proj_context_errno_string
+// #cgo noescape proj_context_set_search_paths
+// #cgo noescape proj_create
+// #cgo noescape proj_create_argv
+// #cgo noescape proj_create_crs_to_crs
+// #cgo noescape proj_create_crs_to_crs_from_pj
+// #cgo noescape proj_destroy
+// #cgo noescape proj_log_level
 import "C"
 
 import (

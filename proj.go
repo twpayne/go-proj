@@ -3,6 +3,12 @@ package proj
 
 // #cgo pkg-config: proj
 // #include "go-proj.h"
+// #cgo nocallback proj_area_create
+// #cgo nocallback proj_area_destroy
+// #cgo nocallback proj_area_set_bbox
+// #cgo noescape proj_area_create
+// #cgo noescape proj_area_destroy
+// #cgo noescape proj_area_set_bbox
 import "C"
 
 import (
