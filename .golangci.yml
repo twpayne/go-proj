@@ -1,6 +1,6 @@
 version: "2"
 run:
-  go: "1.24"
+  go: "1.25"
 linters:
   enable:
     - asasalint
@@ -17,6 +17,7 @@ linters:
     - dupl
     - dupword
     - durationcheck
+    - embeddedstructfieldcheck
     - err113
     - errchkjson
     - errname
@@ -93,6 +94,7 @@ linters:
     - wrapcheck
     - zerologlint
   disable:
+    - arangolint
     - depguard
     - exhaustruct
     - funlen
@@ -101,9 +103,10 @@ linters:
     - lll
     - mnd
     - nlreturn
+    - noinlineerr
     - paralleltest
     - varnamelen
-    - wsl
+    - wsl_v5
   exclusions:
     generated: lax
     presets:
