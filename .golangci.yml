@@ -11,7 +11,6 @@ linters:
     - containedctx
     - contextcheck
     - copyloopvar
-    - cyclop
     - decorder
     - dogsled
     - dupl
@@ -91,10 +90,10 @@ linters:
     - usetesting
     - wastedassign
     - whitespace
-    - wrapcheck
     - zerologlint
   disable:
     - arangolint
+    - cyclop
     - depguard
     - exhaustruct
     - funlen
@@ -106,6 +105,7 @@ linters:
     - noinlineerr
     - paralleltest
     - varnamelen
+    - wrapcheck
     - wsl_v5
   exclusions:
     generated: lax
