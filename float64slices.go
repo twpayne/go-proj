@@ -14,8 +14,8 @@ func CoordsToFloat64Slices(coords []Coord) [][]float64 {
 	return float64Slices
 }
 
-// Float64Slices is a convenience function that converts a slice of []float64s
-// to a slice of Coords.
+// Float64SlicesToCoords is a convenience function that converts a slice of
+// []float64s to a slice of Coords.
 func Float64SlicesToCoords(float64Slices [][]float64) []Coord {
 	if float64Slices == nil {
 		return nil

@@ -91,6 +91,10 @@ linters:
     - wastedassign
     - whitespace
     - zerologlint
+    - godoclint
+    - iotamixing
+    - modernize
+    - unqueryvet
   disable:
     - arangolint
     - cyclop

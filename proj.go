@@ -35,7 +35,7 @@ type Bounds struct {
 	YMax float64
 }
 
-// A coord is a coordinate.
+// A Coord is a coordinate.
 type Coord [4]float64
 
 // An Error is an error.
