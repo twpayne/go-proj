@@ -60,7 +60,7 @@ type PJInfo struct {
 	Accuracy    float64
 }
 
-// NormalizeForVisualization eturns a new PJ instance whose axis order is the
+// NormalizeForVisualization returns a new PJ instance whose axis order is the
 // one expected for visualization purposes. If the axis order of its source or
 // target CRS is northing, easting, then an axis swap operation will be
 // inserted.
