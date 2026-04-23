@@ -223,8 +223,8 @@ func (pj *PJ) TransBounds(direction Direction, bounds Bounds, densifyPoints int)
 	defer pj.context.Unlock()
 
 	var transBounds Bounds
-	if C.proj_trans_bounds(pj.context.cPJContext, pj.cPJ, (C.PJ_DIRECTION)(direction),
-		(C.double)(bounds.XMin), (C.double)(bounds.YMin), (C.double)(bounds.XMax), (C.double)(bounds.YMax),
+	if C.proj_trans_bounds(pj.context.cPJContext, pj.cPJ, C.PJ_DIRECTION(direction),
+		C.double(bounds.XMin), C.double(bounds.YMin), C.double(bounds.XMax), C.double(bounds.YMax),
 		(*C.double)(&transBounds.XMin), (*C.double)(&transBounds.YMin), (*C.double)(&transBounds.XMax), (*C.double)(&transBounds.YMax),
 		C.int(densifyPoints)) == 0 {
 		return Bounds{}, pj.context.newError(int(C.proj_errno(pj.cPJ)))

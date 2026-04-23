@@ -47,7 +47,7 @@ type Error struct {
 // NewArea returns a new Area.
 func NewArea(westLonDegree, southLatDegree, eastLonDegree, northLatDegree float64) *Area {
 	cPJArea := C.proj_area_create()
-	C.proj_area_set_bbox(cPJArea, (C.double)(westLonDegree), (C.double)(southLatDegree), (C.double)(eastLonDegree), (C.double)(northLatDegree))
+	C.proj_area_set_bbox(cPJArea, C.double(westLonDegree), C.double(southLatDegree), C.double(eastLonDegree), C.double(northLatDegree))
 	a := &Area{
 		cPJArea: cPJArea,
 	}

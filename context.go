@@ -166,7 +166,7 @@ func (c *Context) NewFromArgs(args ...string) (*PJ, error) {
 		cArgs[i] = cArg
 	}
 
-	return c.newPJ(C.proj_create_argv(c.cPJContext, (C.int)(len(cArgs)), (**C.char)(unsafe.Pointer(&cArgs[0]))))
+	return c.newPJ(C.proj_create_argv(c.cPJContext, C.int(len(cArgs)), (**C.char)(unsafe.Pointer(&cArgs[0]))))
 }
 
 func (c *Context) Unlock() {
