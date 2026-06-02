@@ -1,4 +1,6 @@
 name: main
+env:
+  GOEXPERIMENT: cgocheck2
 on:
   pull_request:
   push:
