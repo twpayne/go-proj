@@ -12,7 +12,6 @@ package proj
 import "C"
 
 import (
-	"math"
 	"runtime"
 )
 
@@ -27,16 +26,6 @@ const (
 type Area struct {
 	cPJArea *C.PJ_AREA
 }
-
-type Bounds struct {
-	XMin float64
-	YMin float64
-	XMax float64
-	YMax float64
-}
-
-// A Coord is a coordinate.
-type Coord [4]float64
 
 // An Error is an error.
 type Error struct {
@@ -56,35 +45,6 @@ func NewArea(westLonDegree, southLatDegree, eastLonDegree, northLatDegree float6
 	}, cPJArea)
 	return a
 }
-
-// NewCoord returns a new Coord.
-func NewCoord(x, y, z, m float64) Coord {
-	return Coord{x, y, z, m}
-}
-
-// DegToRad returns a new Coord with the first two elements transformed from
-// degrees to radians.
-func (c *Coord) DegToRad() Coord {
-	return Coord{math.Pi * c[0] / 180, math.Pi * c[1] / 180, c[2], c[3]}
-}
-
-// RadToDeg returns a new Coord with the first two elements transformed from
-// radians to degrees.
-func (c *Coord) RadToDeg() Coord {
-	return Coord{180 * c[0] / math.Pi, 180 * c[1] / math.Pi, c[2], c[3]}
-}
-
-// X returns c's X coordinate.
-func (c *Coord) X() float64 { return c[0] }
-
-// Y returns c's Y coordinate.
-func (c *Coord) Y() float64 { return c[1] }
-
-// Z returns c's Z coordinate.
-func (c *Coord) Z() float64 { return c[2] }
-
-// M returns c's M coordinate.
-func (c *Coord) M() float64 { return c[3] }
 
 func (e *Error) Error() string {
 	return e.context.errnoString(e.errno)
