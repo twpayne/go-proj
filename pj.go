@@ -1,6 +1,8 @@
 package proj
 
 // #include "go-proj.h"
+// #cgo nocallback proj_coordoperation_has_ballpark_transformation
+// #cgo nocallback proj_crs_get_coordoperation
 // #cgo nocallback proj_errno
 // #cgo nocallback proj_errno_reset
 // #cgo nocallback proj_errno_restore
@@ -15,6 +17,8 @@ package proj
 // #cgo nocallback proj_trans_bounds
 // #cgo nocallback proj_trans_generic
 // #cgo nocallback proj_trans_get_last_used_operation
+// #cgo noescape proj_coordoperation_has_ballpark_transformation
+// #cgo noescape proj_crs_get_coordoperation
 // #cgo noescape proj_errno
 // #cgo noescape proj_errno_reset
 // #cgo noescape proj_errno_restore
@@ -58,6 +62,24 @@ type PJInfo struct {
 	Definition  string
 	HasInverse  bool
 	Accuracy    float64
+}
+
+// CRSGetCoordOperation returns the Conversion of a DerivedCRS (such as a
+// ProjectedCRS), or the Transformation from the baseCRS to the hubCRS of a
+// BoundCRS.
+func (pj *PJ) CRSGetCoordOperation() (*PJ, error) {
+	pj.context.Lock()
+	defer pj.context.Unlock()
+	return pj.context.newPJ(C.proj_crs_get_coordoperation(pj.context.cPJContext, pj.cPJ))
+}
+
+// HasBallparkConversion returns whether a coordinate operation has a "ballpark"
+// transformation, that is a very approximate one, due to lack of more accurate
+// transformations.
+func (pj *PJ) HasBallparkConversion() bool {
+	pj.context.Lock()
+	defer pj.context.Unlock()
+	return C.proj_coordoperation_has_ballpark_transformation(pj.context.cPJContext, pj.cPJ) != 0
 }
 
 // NormalizeForVisualization returns a new PJ instance whose axis order is the

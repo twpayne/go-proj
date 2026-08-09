@@ -25,6 +25,21 @@ var (
 	gdanskEPSG2180  = proj.Coord{723134.1266446244, 474831.4869142064, 11.1, 0}
 )
 
+func TestPJ_CRSGetCoordoperation(t *testing.T) {
+	defer runtime.GC()
+
+	context := proj.NewContext()
+	assert.NotZero(t, context)
+
+	pipeline, err := context.NewCRSToCRS("EPSG:4267", "EPSG:4269", nil)
+	assert.NoError(t, err)
+	assert.NotZero(t, pipeline)
+
+	coordOperation, err := pipeline.CRSGetCoordOperation()
+	assert.NoError(t, err)
+	assert.True(t, coordOperation.HasBallparkConversion())
+}
+
 func TestPJ_Info(t *testing.T) {
 	defer runtime.GC()
 
