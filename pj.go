@@ -1,6 +1,7 @@
 package proj
 
 // #include "go-proj.h"
+// #cgo nocallback proj_coordoperation_has_ballpark_transformation
 // #cgo nocallback proj_errno
 // #cgo nocallback proj_errno_reset
 // #cgo nocallback proj_errno_restore
@@ -15,6 +16,7 @@ package proj
 // #cgo nocallback proj_trans_bounds
 // #cgo nocallback proj_trans_generic
 // #cgo nocallback proj_trans_get_last_used_operation
+// #cgo noescape proj_coordoperation_has_ballpark_transformation
 // #cgo noescape proj_errno
 // #cgo noescape proj_errno_reset
 // #cgo noescape proj_errno_restore
@@ -117,6 +119,15 @@ func (pj *PJ) GetLastUsedOperation() (*PJ, error) {
 	pj.context.Lock()
 	defer pj.context.Unlock()
 	return pj.context.newPJ(C.proj_trans_get_last_used_operation(pj.cPJ))
+}
+
+// HasBallparkTransformation returns whether a coordinate operation contains a
+// ballpark transformation, that is, a very approximate transformation used
+// when a more accurate transformation is unavailable.
+func (pj *PJ) HasBallparkTransformation() bool {
+	pj.context.Lock()
+	defer pj.context.Unlock()
+	return C.proj_coordoperation_has_ballpark_transformation(pj.context.cPJContext, pj.cPJ) != 0
 }
 
 // Info returns information about pj.
