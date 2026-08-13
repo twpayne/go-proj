@@ -44,10 +44,6 @@ func TestPJ_Info(t *testing.T) {
 }
 
 func TestPJ_HasBallparkTransformation(t *testing.T) {
-	if proj.VersionMajor < 9 || proj.VersionMajor == 9 && proj.VersionMinor < 1 {
-		t.Skip("last used operation not supported")
-	}
-
 	defer runtime.GC()
 
 	context := proj.NewContext()
@@ -95,10 +91,6 @@ func TestPJ_HasBallparkTransformation(t *testing.T) {
 }
 
 func TestPJ_LPDist(t *testing.T) {
-	if proj.VersionMajor < 7 {
-		t.Skip("distance functions not tested")
-	}
-
 	defer runtime.GC()
 
 	context := proj.NewContext()
@@ -348,10 +340,6 @@ func TestPJ_TransArray(t *testing.T) {
 }
 
 func TestPJ_TransBounds(t *testing.T) {
-	if proj.VersionMajor < 8 || proj.VersionMajor == 8 && proj.VersionMinor < 2 {
-		t.Skip()
-	}
-
 	defer runtime.GC()
 
 	context := proj.NewContext()

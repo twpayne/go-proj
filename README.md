@@ -8,7 +8,7 @@ Package go-proj provides an interface to [PROJ](https://proj.org).
 
 * High performance bulk transformation of coordinates.
 * Idiomatic Go API, including complete error handling.
-* Supports PROJ versions 6 and upwards.
+* Supports PROJ versions 9.4 and upwards.
 * Compatible with all geometry libraries.
 * Convenience functions for handling coordinates as `[]float64`s.
 * Automatically handles C memory management.
