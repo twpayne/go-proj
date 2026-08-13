@@ -43,6 +43,57 @@ func TestPJ_Info(t *testing.T) {
 	assert.Equal(t, expectedInfo, actualInfo)
 }
 
+func TestPJ_HasBallparkTransformation(t *testing.T) {
+	if proj.VersionMajor < 9 || proj.VersionMajor == 9 && proj.VersionMinor < 1 {
+		t.Skip("last used operation not supported")
+	}
+
+	defer runtime.GC()
+
+	context := proj.NewContext()
+	assert.NotZero(t, context)
+
+	for _, tc := range []struct {
+		name      string
+		sourceCRS string
+		targetCRS string
+		coord     proj.Coord
+		expected  bool
+	}{
+		{
+			name:      "ballpark",
+			sourceCRS: "+proj=longlat +ellps=clrk66 +type=crs",
+			targetCRS: "EPSG:4326",
+			coord:     proj.NewCoord(-100, 40, 0, 0),
+			expected:  true,
+		},
+		{
+			name:      "not ballpark",
+			sourceCRS: "EPSG:4326",
+			targetCRS: "EPSG:3857",
+			coord:     proj.NewCoord(7.4475, 46.948056, 0, 0),
+			expected:  false,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			pipeline, err := context.NewCRSToCRS(tc.sourceCRS, tc.targetCRS, nil)
+			assert.NoError(t, err)
+			assert.NotZero(t, pipeline)
+
+			pipeline, err = pipeline.NormalizeForVisualization()
+			assert.NoError(t, err)
+			assert.NotZero(t, pipeline)
+
+			_, err = pipeline.Forward(tc.coord)
+			assert.NoError(t, err)
+
+			operation, err := pipeline.GetLastUsedOperation()
+			assert.NoError(t, err)
+			assert.Equal(t, tc.expected, operation.HasBallparkTransformation())
+		})
+	}
+}
+
 func TestPJ_LPDist(t *testing.T) {
 	if proj.VersionMajor < 7 {
 		t.Skip("distance functions not tested")
